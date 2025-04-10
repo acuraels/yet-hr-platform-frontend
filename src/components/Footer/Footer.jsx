@@ -20,7 +20,16 @@ const Footer = () => {
                     <div className="footer__column">
                         <h3 className="footer__heading">Главный офис</h3>
                         <p className="footer__text">г. Екатеринбург, <br /> ул. Малышева, 164, оф. 406</p>
+                    </div>
 
+                    <div className="footer__column">
+                        <h3 className="footer__heading">Телефон</h3>
+                        <a href="tel:+79999999999" className="footer__text footer__phone">+7 (999) 999-99-99</a>
+                        <p className="footer__text footer__text-small">Звоните с 9:00 до 18:00</p>
+
+                    </div>
+
+                    <div className="footer__column">
                         <h3 className="footer__heading footer__heading-contact">Мы на связи</h3>
                         <div className="footer__contact-icons">
                             <a href="https://wa.me/79999999999" className="footer__icon-link" aria-label="WhatsApp">
@@ -42,9 +51,6 @@ const Footer = () => {
                     </div>
 
                     <div className="footer__column">
-                        <h3 className="footer__heading">Телефон</h3>
-                        <a href="tel:+79999999999" className="footer__text footer__phone">+7 (999) 999-99-99</a>
-                        <p className="footer__text footer__text-small">Звоните с 9:00 до 18:00</p>
 
                         <h3 className="footer__heading footer__heading-email">Почта</h3>
                         <a href="mailto:uet.hiring@test.com" className="footer__email">uet.hiring@test.com</a>

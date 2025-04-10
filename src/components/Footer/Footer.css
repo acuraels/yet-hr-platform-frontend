@@ -39,15 +39,15 @@
 }
 
 .footer__logo-text {
-    font-size: 18px;
+    font-size: 19px;
     font-weight: 600;
     color: #000;
 }
 
 .footer__vacancy-link {
     color: #000;
-    text-decoration: none;
-    font-size: 16px;
+    text-decoration: underline;
+    font-size: 19px;
     transition: color 0.3s ease;
 }
 
@@ -68,7 +68,7 @@
 }
 
 .footer__heading {
-    font-size: 18px;
+    font-size: 19px;
     font-weight: 600;
     margin-bottom: 15px;
     color: #000;
@@ -95,7 +95,7 @@
 }
 
 .footer__text-small {
-    font-size: 14px;
+    font-size: 19px;
 }
 
 .footer__contact-icons {
@@ -163,10 +163,6 @@
         min-width: 180px;
     }
 
-    .footer__heading {
-        font-size: 17px;
-    }
-
     .footer__text {
         font-size: 15px;
     }
@@ -195,7 +191,7 @@
         /* В строку */
         flex-wrap: wrap;
         /* Разрешаем перенос */
-        gap: 20px;
+        gap: 30px;
         /* Отступ между колонками */
     }
 
@@ -228,26 +224,6 @@
 @media (max-width: 480px) {
     .footer {
         padding: 25px 0;
-    }
-
-    .footer__logo-text {
-        font-size: 16px;
-    }
-
-    .footer__heading {
-        font-size: 16px;
-    }
-
-    .footer__text {
-        font-size: 14px;
-    }
-
-    .footer__text-small {
-        font-size: 12px;
-    }
-
-    .footer__nav-link {
-        font-size: 14px;
     }
 
     .footer__icon-link {
