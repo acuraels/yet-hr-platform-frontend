@@ -15,6 +15,10 @@
     }
 }
 
+.footer {
+    background-color: #222;
+}
+
 .footer__container {
     max-width: 1080px;
     margin: 0 auto;
@@ -23,13 +27,20 @@
 .footer__top {
     display: flex;
     align-items: center;
-    margin-bottom: 40px;
+    margin-bottom: 100px;
     gap: 280px;
 }
 
-.footer__logo {
+.footer__logo-container {
     display: flex;
+    color: #fff;
+    transition: color 0.3s ease, transform 0.3s ease;
     align-items: center;
+}
+
+.footer__logo-container:hover {
+    color: #EEE600;
+    transform: scale(1.05);
 }
 
 .footer__logo-img {
@@ -41,57 +52,58 @@
 .footer__logo-text {
     font-size: 19px;
     font-weight: 600;
-    color: #000;
+    color: #fff;
 }
 
 .footer__vacancy-link {
-    color: #000;
-    text-decoration: underline;
-    font-size: 19px;
-    transition: color 0.3s ease;
+    color: #fff;
+    border-bottom: 1px solid #EEE600;
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: inline-block;
+    font-size: large;
 }
 
 .footer__vacancy-link:hover {
     color: #EEE600;
+    transform: translateX(3px);
 }
 
 .footer__content {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+    gap: 30px;
 }
 
 .footer__column {
     flex: 1;
-    min-width: 200px;
-    margin-bottom: 30px;
+    min-width: 300px;
 }
 
 .footer__heading {
     font-size: 19px;
     font-weight: 600;
     margin-bottom: 15px;
-    color: #000;
-}
-
-.footer__heading-contact,
-.footer__heading-email {
-    margin-top: 30px;
+    color: #fff;
 }
 
 .footer__text {
     font-size: 16px;
     line-height: 1.5;
     margin-bottom: 5px;
+    color: #fff;
 }
 
 .footer__phone {
-    color: #000;
-    transition: color 0.3s ease;
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: inline-block;
 }
 
 .footer__phone:hover {
     color: #EEE600;
+    transform: translateX(3px);
 }
 
 .footer__text-small {
@@ -125,13 +137,15 @@
 }
 
 .footer__email {
-    color: black;
+    color: #fff;
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: inline-block;
 }
 
 .footer__email:hover {
     color: #EEE600;
+    transform: translateX(3px);
 }
 
 .footer__nav {
@@ -141,7 +155,7 @@
 }
 
 .footer__nav-link {
-    color: black;
+    color: #fff;
     text-decoration: none;
     transition: color 0.3s ease, transform 0.3s ease;
     display: inline-block;

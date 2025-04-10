@@ -2,6 +2,7 @@
     width: 100%;
     margin: 0 auto;
     display: flex;
+    height: 200vh;
     flex-direction: column;
     align-items: center;
     animation: fadeIn 1s ease-out;
@@ -45,7 +46,7 @@
     color: white;
     font-size: 48px;
     font-weight: 700;
-    margin-bottom: 30px;
+    margin-bottom: 75px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     line-height: 1.2;
     padding: 0 20px;
@@ -135,11 +136,11 @@
 
 .home-page__company-info {
     flex: 1;
-    min-width: 300px;
+    min-width: 550px;
 }
 
 .home-page__company-description {
-    font-size: 19px;
+    font-size: 24px;
     line-height: 1.5;
     margin-bottom: 30px;
     color: #000;
@@ -149,17 +150,11 @@
     margin-bottom: 0;
 }
 
-.home-page__stats {
-    flex: 1.5;
-    display: flex;
-    flex-direction: column;
-    gap: 60px;
-}
-
 .home-page__stats-row {
-    display: flex;
+    display: flex !important;
     justify-content: space-between;
     gap: 60px;
+    margin-bottom: 50px;
 }
 
 .home-page__stat-item {
@@ -176,7 +171,7 @@
 .home-page__stat-description {
     font-size: 19px;
     line-height: 1.4;
-    color: black
+    color: black;
 }
 
 /* Responsive styles */
@@ -201,6 +196,10 @@
         font-size: 40px;
     }
 
+    .home-page__company-description {
+        font-size: 20px;
+    }
+
     .home-page__stats-container {
         gap: 40px;
     }
@@ -223,6 +222,10 @@
     .home-page__title {
         font-size: 36px;
         padding: 0 20px;
+    }
+
+    .home-page__company-description {
+        font-size: 18px;
     }
 
     .home-page__stats-container {
@@ -261,26 +264,31 @@
         max-width: 220px;
     }
 
-    .home-page__stats {
-        flex-direction: row;
-    }
-
-    .home-page__stats-row {
-        flex-direction: column;
-        gap: 30px;
-    }
-
-    .home-page__company-description {
-        margin-bottom: 20px;
-        text-align: left;
-    }
-
     .home-page__stat-number {
         font-size: 28px;
     }
 
-    .home-page__stat-description {
-        font-size: 19px;
+    .home-page__stats-container {
+        gap: 50px;
+    }
+
+    /* Новые стили для выравнивания статистики на телефоне */
+    .home-page__stats {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    /* Убираем "обертку" строк, чтобы все элементы стали прямыми детьми контейнера */
+    .home-page__stats-row {
+        display: contents;
+    }
+
+    /* Каждый статистический элемент занимает примерно 50% ширины */
+    .home-page__stat-item {
+        flex: 0 0 48%;
+        margin-bottom: 20px;
     }
 }
 
@@ -300,17 +308,8 @@
         font-size: 13px;
         max-width: 200px;
     }
-
-    .home-page__stat-number {
-        font-size: 24px;
-    }
-
-    .home-page__stats-container {
-        gap: 50px;
-    }
 }
 
-/* Специальные стили для очень маленьких экранов */
 @media (max-width: 360px) {
     .home-page__hero {
         height: 200px;

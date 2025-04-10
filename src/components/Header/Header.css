@@ -1,10 +1,11 @@
 .header {
-    width: 100%;
+    width: 90%;
     margin: 0 auto;
     animation: fadeIn 1s ease-out;
     position: relative;
     margin: auto;
     max-width: 1080px;
+    padding: 0.5rem 0;
 }
 
 @keyframes fadeIn {
@@ -104,10 +105,6 @@
         max-height: 28px;
     }
 
-    .logo__text {
-        font-size: 17px;
-    }
-
     .header__nav a {
         font-size: 17px;
     }
@@ -168,10 +165,6 @@
         width: 50px;
         max-height: 24px;
     }
-
-    .logo__text {
-        font-size: 16px;
-    }
 }
 
 /* Адаптивность для маленьких мобильных устройств */
@@ -183,11 +176,6 @@
     .logo {
         width: 40px;
         max-height: 20px;
-    }
-
-    .logo__text {
-        font-size: 14px;
-        margin-left: 3px;
     }
 
     .header__nav {
