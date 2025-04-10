@@ -43,7 +43,7 @@ const Footer = () => {
 
                     <div className="footer__column">
                         <h3 className="footer__heading">Телефон</h3>
-                        <p className="footer__text">+7 (999) 999-99-99</p>
+                        <a href="tel:+79999999999" className="footer__text footer__phone">+7 (999) 999-99-99</a>
                         <p className="footer__text footer__text-small">Звоните с 9:00 до 18:00</p>
 
                         <h3 className="footer__heading footer__heading-email">Почта</h3>

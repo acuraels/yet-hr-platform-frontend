@@ -75,6 +75,15 @@
     margin-bottom: 5px;
 }
 
+.footer__phone {
+    color: #000;
+    transition: color 0.3s ease;
+}
+
+.footer__phone:hover {
+    color: #cac83f;
+}
+
 .footer__text-small {
     font-size: 14px;
 }
@@ -82,7 +91,7 @@
 .footer__contact-icons {
     display: flex;
     margin-top: 10px;
-    margin-left: -8px;
+    gap: 10px;
 }
 
 .footer__icon-link {
@@ -91,8 +100,6 @@
     justify-content: center;
     width: 40px;
     height: 40px;
-    border-radius: 50%;
-    background-color: #f5f5f5;
     transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
@@ -137,7 +144,8 @@
 /* Адаптивность для планшетов */
 @media (max-width: 992px) {
     .footer__container {
-        padding: 0 15px;
+        padding: 0 20px 0;
+        max-width: 90%;
     }
 
     .footer__column {
@@ -170,19 +178,38 @@
         margin-top: 10px;
     }
 
+    /* Вместо flex-direction: column; делаем две колонки */
     .footer__content {
-        flex-direction: column;
-        gap: 30px;
+        flex-direction: row;
+        /* В строку */
+        flex-wrap: wrap;
+        /* Разрешаем перенос */
+        gap: 20px;
+        /* Отступ между колонками */
     }
 
     .footer__column {
-        width: 100%;
+        width: calc(50% - 10px);
+        /* Каждая колонка ~50% */
+        min-width: auto;
+        /* Убираем жёсткий min-width */
         margin-bottom: 0;
+        /* Можно скорректировать при желании */
     }
 
     .footer__heading-contact,
     .footer__heading-email {
         margin-top: 20px;
+    }
+
+    .footer__icon-link {
+        width: 24px;
+        height: 24px;
+    }
+
+    .footer__icon {
+        width: 20px;
+        height: 20px;
     }
 }
 
@@ -190,10 +217,6 @@
 @media (max-width: 480px) {
     .footer {
         padding: 25px 0;
-    }
-
-    .footer__container {
-        padding: 0 10px;
     }
 
     .footer__logo-text {
@@ -217,8 +240,8 @@
     }
 
     .footer__icon-link {
-        width: 36px;
-        height: 36px;
+        width: 24px;
+        height: 24px;
     }
 
     .footer__icon {
