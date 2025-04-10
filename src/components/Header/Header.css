@@ -34,7 +34,7 @@
 }
 
 .header__logo:hover {
-    color: #cac83f;
+    color: #EEE600;
     transform: scale(1.05);
 }
 
@@ -70,7 +70,7 @@
 }
 
 .header__nav a:hover {
-    color: #cac83f;
+    color: #EEE600;
     transform: scale(1.05);
 }
 

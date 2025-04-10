@@ -1,8 +1,18 @@
 .footer {
     width: 100%;
-    background-color: #fff;
     padding: 40px 0;
     margin-top: 60px;
+    animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .footer__container {
@@ -42,7 +52,7 @@
 }
 
 .footer__vacancy-link:hover {
-    color: #cac83f;
+    color: #EEE600;
 }
 
 .footer__content {
@@ -81,7 +91,7 @@
 }
 
 .footer__phone:hover {
-    color: #cac83f;
+    color: #EEE600;
 }
 
 .footer__text-small {
@@ -101,10 +111,11 @@
     width: 40px;
     height: 40px;
     transition: background-color 0.3s ease, transform 0.3s ease;
+    border-radius: 50%;
 }
 
 .footer__icon-link:hover {
-    background-color: #e0e0e0;
+    background-color: #EEE600;
     transform: translateY(-2px);
 }
 
@@ -114,13 +125,13 @@
 }
 
 .footer__email {
-    color: #333;
+    color: black;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .footer__email:hover {
-    color: #cac83f;
+    color: #EEE600;
 }
 
 .footer__nav {
@@ -137,7 +148,7 @@
 }
 
 .footer__nav-link:hover {
-    color: #cac83f;
+    color: #EEE600;
     transform: translateX(3px);
 }
 

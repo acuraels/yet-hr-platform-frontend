@@ -4,6 +4,17 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .home-page__hero {
@@ -12,7 +23,6 @@
     max-width: 1300px;
     height: 600px;
     background-image: url("/bg.png");
-    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     border-radius: 40px;
@@ -57,24 +67,58 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    background-color: white;
-    color: #000;
-    padding: 12px 24px;
-    border-radius: 8px;
     font-size: 16px;
     font-weight: 500;
     text-decoration: none;
-    transition: all 0.3s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     z-index: 2;
     max-width: 250px;
-    width: auto;
+    width: 255px;
+    padding: 0.75rem 0;
+    background: linear-gradient(45deg, #925928, #EEE600);
+    /* базовый градиент */
+    color: black;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 85%;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.home-page__cta-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent);
+    transition: all 0.5s;
 }
 
 .home-page__cta-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(45deg, #48ce22, #EEE600);
+    /* яркий вариант на hover */
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
+
+.home-page__cta-button:hover::before {
+    left: 100%;
+}
+
+.home-page__cta-button:active {
+    background: linear-gradient(45deg, #c6cf23, #0e7471);
+    /* слегка затемненный для нажатия */
+    transform: translateY(-1px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
 
 .home-page__cta-button svg {
     transition: transform 0.3s ease;
