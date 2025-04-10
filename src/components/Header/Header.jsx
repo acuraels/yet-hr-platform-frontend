@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import logo from "../../assets/logo.svg";
 import "./Header.css";
 
 const Header = () => {
@@ -41,7 +42,7 @@ const Header = () => {
             <div className="header__container">
                 <Link to="/home" className="header__logo">
                     <div className="logo__container">
-                        <img src="/logo.svg" alt="Логотип компании" className="logo" />
+                        <img src={logo} alt="Логотип компании" className="logo" />
                         <p className="logo__text"><span className="logo__span">УЭТ</span> | Работа у нас</p>
                     </div>
                 </Link>

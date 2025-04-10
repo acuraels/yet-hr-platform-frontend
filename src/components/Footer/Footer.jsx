@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import logo from "../../assets/logo.svg";
 import "./Footer.css"
 
 const Footer = () => {
@@ -7,7 +8,7 @@ const Footer = () => {
             <div className="footer__container">
                 <div className="footer__top">
                     <div className="footer__logo">
-                        <img src="/logo.svg" alt="Логотип компании" className="footer__logo-img" />
+                        <img src={logo} alt="Логотип компании" className="footer__logo-img" />
                         <span className="footer__logo-text">ТОРГОВЫЙ ДОМ УЭТ</span>
                     </div>
                     <Link to="/vacancy-search" className="footer__vacancy-link">
