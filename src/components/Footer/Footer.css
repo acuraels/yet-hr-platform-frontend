@@ -57,10 +57,15 @@
 
 .footer__vacancy-link {
     color: #fff;
-    border-bottom: 1px solid #EEE600;
+    border-bottom: 1px solid #EEE600 !important;
     transition: color 0.3s ease, transform 0.3s ease;
     display: inline-block;
     font-size: large;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
 }
 
 .footer__vacancy-link:hover {
