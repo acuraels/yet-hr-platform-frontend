@@ -87,4 +87,4 @@ const HomePageMain = () => {
     )
 }
 
-export default HomePageMain
+export default HomePageMain;
