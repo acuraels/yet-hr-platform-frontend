@@ -1,14 +1,12 @@
 import React from 'react';
-import Header from '../components/Header/Header.jsx';
+import HeaderHR from '../components/HeaderHR/HeaderHR.jsx';
 import LoginPageMain from '../components/LoginPage/LoginPageMain.jsx';
-import Footer from '../components/Footer/Footer.jsx';
 
 const LoginPage = () => {
     return (
         <>
-            <Header />
+            <HeaderHR />
             <LoginPageMain />
-            <Footer />
         </>
     );
 };

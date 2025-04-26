@@ -1,0 +1,568 @@
+.vacancies-page__main {
+    margin: auto;
+    max-width: 1080px;
+    padding: 20px 0px;
+    animation: fadeIn 1s ease-out;
+    width: 90%;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.vacancies-page__title {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 32px;
+}
+
+.vacancies-page__content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* На десктопах - две колонки */
+@media (min-width: 768px) {
+    .vacancies-page__content {
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .vacancies-page__list {
+        width: 66%;
+    }
+
+    .vacancies-page__sidebar {
+        width: 34%;
+    }
+}
+
+/* Карточка вакансии */
+.vacancy-card-hr {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 24px 0;
+    margin-bottom: 16px;
+}
+
+.vacancy-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.vacancy-card__tag {
+    background-color: #FFF176;
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 14px;
+}
+
+.vacancy-card__title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.vacancy-card__description {
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.vacancy-card__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+}
+
+.vacancy-card__button {
+    border: 2px solid #000;
+    border-radius: 50px;
+    padding: 8px 24px;
+    font-weight: 500;
+    background-color: transparent;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.vacancy-card__button:hover {
+    background-color: #f0f0f0;
+}
+
+.vacancy-card__salary {
+    color: #333;
+}
+
+/* Пагинация */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+}
+
+.pagination__button {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px 12px;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.pagination__button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination__button--active {
+    background-color: #000;
+    color: #fff;
+}
+
+/* Фильтры */
+.filters {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.filters__title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+.filters__group {
+    margin-bottom: 24px;
+}
+
+.filters__group:last-child {
+    margin-bottom: 0;
+}
+
+.filters__group-title {
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.filters__options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filters__option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.filters__option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+}
+
+/* Блок призыва к действию */
+.cta-block {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+}
+
+.cta-block__text {
+    margin-bottom: 12px;
+}
+
+.cta-block__button {
+    background-color: #FFF176;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-weight: 500;
+    width: 75%;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.cta-block__button:hover {
+    background-color: #FFE57F;
+}
+
+@media (max-width: 1200px) {
+    .vacancies-page__title {
+        text-align: center;
+    }
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 480px) {
+    .vacancies-page__title {
+        font-size: 28px;
+    }
+
+    .vacancy-card {
+        padding: 16px;
+    }
+
+    .vacancy-card__title {
+        font-size: 20px;
+    }
+
+    .vacancy-card__footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .filters,
+    .cta-block {
+        padding: 16px;
+    }
+}
+
+/* Адаптивность для планшетов */
+@media (min-width: 481px) and (max-width: 767px) {
+    .vacancy-card__footer {
+        flex-wrap: wrap;
+    }
+}
+
+/* Модальное окно */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+}
+
+.modal__content {
+    position: relative;
+    background-color: white;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    z-index: 1001;
+}
+
+.modal__title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.modal__vacancy-title {
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.modal__form-container {
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.modal__form-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.modal__form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.modal__input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.modal__input-row {
+    display: flex;
+    gap: 12px;
+}
+
+.modal__input-row .modal__input {
+    flex: 1;
+}
+
+.modal__textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    min-height: 100px;
+    resize: vertical;
+    margin-top: 16px;
+}
+
+.modal__button {
+    background-color: #FFF176;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: block;
+    margin: 0 auto;
+}
+
+.modal__button:hover {
+    background-color: #FFE57F;
+}
+
+.modal__buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.modal__button--back {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    color: #333;
+}
+
+.modal__button--back:hover {
+    background-color: #f0f0f0;
+}
+
+.modal__button--submit {
+    background-color: #9CFF76;
+}
+
+.modal__button--submit:hover {
+    background-color: #8BEE65;
+}
+
+.modal__button--close {
+    margin-top: 20px;
+}
+
+.modal__step--success {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.modal__success-message {
+    margin: 20px 0;
+    font-size: 16px;
+}
+
+/* Загрузка файла */
+.modal__upload-container {
+    margin-top: 8px;
+}
+
+.modal__upload-options {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modal__upload-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #a29bfe;
+    color: white;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.modal__upload-button:hover {
+    background-color: #8c7ae6;
+}
+
+.modal__upload-button--uploaded {
+    background-color: #6c5ce7;
+}
+
+.modal__upload-icon {
+    font-size: 16px;
+}
+
+.modal__upload-or {
+    font-size: 14px;
+    color: #666;
+}
+
+.modal__input--link {
+    flex: 1;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 480px) {
+    .modal__content {
+        padding: 20px;
+        max-width: 90%;
+    }
+
+    .modal__form-container {
+        padding: 16px;
+    }
+
+    .modal__input-row {
+        flex-direction: column;
+    }
+
+    .modal__upload-options {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .modal__upload-or {
+        text-align: center;
+        margin: 8px 0;
+    }
+
+    .modal__buttons {
+        flex-direction: column;
+    }
+
+    .modal__button--back {
+        order: 2;
+    }
+
+    .modal__button--submit {
+        order: 1;
+        margin-bottom: 12px;
+    }
+}
+
+.hr-vacancies-header {
+    margin-bottom: 30px;
+}
+
+.hr-vacancies-header__top-row {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.hr-vacancies-header__heading {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.hr-vacancies-header__create-btn {
+    background-color: #fee600;
+    border: none;
+    border-radius: 15px;
+    padding: 12px 36px;
+    font-weight: 500;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.hr-vacancies-header__create-btn:hover {
+    background-color: #e6cf00;
+}
+
+.hr-vacancies-header__bottom-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-left: auto;
+}
+
+.hr-vacancies-header__archive-btn {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: underline;
+    padding: 0;
+}
+
+.hr-vacancies-header__archive-btn:hover {
+    color: #333;
+}
+
+.hr-vacancies-header__archive-btn--active {
+    font-weight: bold;
+    color: #333;
+}
+
+@media (max-width: 768px) {
+
+    /* 1. Стек и центрировка шапки */
+    .hr-vacancies-header__top-row {
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+    }
+
+    /* 2. Нижняя кнопка — по центру, сбрасываем авто-отступ */
+    .hr-vacancies-header__bottom-row {
+        width: 100%;
+        margin-left: 0;
+        justify-content: center;
+    }
+
+    /* 3. Подгоняем размеры кнопок, чтобы не растягивались до бесконечности */
+    .hr-vacancies-header__create-btn,
+    .hr-vacancies-header__archive-btn {
+        width: auto;
+        /* либо можно задать max-width */
+        font-size: 14px;
+    }
+}
+
+/* Для совсем узких экранов можно ещё чуть уменьшить отступы */
+@media (max-width: 480px) {
+    .hr-vacancies-header__top-row {
+        gap: 24px;
+        margin-bottom: 8px;
+    }
+
+    .hr-vacancies-header__create-btn {
+        padding: 10px 24px;
+    }
+}
