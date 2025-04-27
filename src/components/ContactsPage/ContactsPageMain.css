@@ -1,0 +1,312 @@
+.contacts-page__main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.contacts-page__container {
+    width: 100%;
+}
+
+.contacts-page__title {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 100px;
+}
+
+.contacts-page__offices {
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+    margin-bottom: 60px;
+}
+
+/* Office Section */
+.office-section {
+    width: 100%;
+}
+
+.office-section__city {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 24px;
+}
+
+.office-section__content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+@media (min-width: 768px) {
+    .office-section__content {
+        flex-direction: row;
+    }
+
+    .office-section__info {
+        width: 40%;
+    }
+
+    .office-section__map {
+        width: 60%;
+    }
+}
+
+.office-info {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.office-info__title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+.office-info__item {
+    margin-bottom: 16px;
+}
+
+.office-info__label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #666;
+}
+
+.office-info__value {
+    display: block;
+    line-height: 1.5;
+}
+
+.office-info__link {
+    color: #4285f4;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.office-info__link:hover {
+    color: #2a56c6;
+    text-decoration: underline;
+}
+
+.office-info__button {
+    display: inline-block;
+    background-color: transparent;
+    border: 1px solid #000;
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 8px;
+}
+
+.office-info__button:hover {
+    background-color: #f0f0f0;
+}
+
+.office-map {
+    width: 100%;
+    height: 400px;
+    border-radius: 8px;
+}
+
+/* Candidate Form Section */
+.candidate-form-section {
+    margin-top: 100px;
+    padding-top: 40px;
+    border-top: 1px solid #eee;
+}
+
+.candidate-form {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border-radius: 75px;
+    padding: 50px;
+    margin-top: 50px;
+}
+
+.candidate-form__title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.candidate-form__container {
+    width: 100%;
+}
+
+.candidate-form__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.candidate-form__input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+}
+
+.candidate-form__input:focus {
+    border-color: #4285f4;
+    outline: none;
+}
+
+.candidate-form__input-row {
+    display: flex;
+    gap: 16px;
+}
+
+@media (max-width: 640px) {
+    .candidate-form__input-row {
+        flex-direction: column;
+    }
+}
+
+.candidate-form__button {
+    background-color: #fee600;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: block;
+    margin: 0 auto;
+}
+
+.candidate-form__button:hover {
+    background-color: #e6cf00;
+}
+
+.candidate-form__buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+@media (max-width: 480px) {
+    .candidate-form__buttons {
+        flex-direction: column;
+    }
+}
+
+.candidate-form__button--back {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    color: #333;
+}
+
+.candidate-form__button--back:hover {
+    background-color: #f0f0f0;
+}
+
+.candidate-form__button--submit {
+    background-color: #9cff76;
+}
+
+.candidate-form__button--submit:hover {
+    background-color: #8bee65;
+}
+
+/* Upload section */
+.candidate-form__upload-container {
+    margin-top: 8px;
+}
+
+.candidate-form__upload-options {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 640px) {
+    .candidate-form__upload-options {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+.candidate-form__upload-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #a29bfe;
+    color: white;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.candidate-form__upload-button:hover {
+    background-color: #8c7ae6;
+}
+
+.candidate-form__upload-button--uploaded {
+    background-color: #6c5ce7;
+}
+
+.candidate-form__upload-icon {
+    font-size: 16px;
+}
+
+.candidate-form__upload-or {
+    font-size: 14px;
+    color: #666;
+}
+
+.candidate-form__input--link {
+    flex: 1;
+}
+
+.candidate-form__textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    min-height: 120px;
+    resize: vertical;
+    transition: border-color 0.2s;
+}
+
+.candidate-form__textarea:focus {
+    border-color: #4285f4;
+    outline: none;
+}
+
+/* Success step */
+.candidate-form__step--success {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.candidate-form__success-message {
+    font-size: 18px;
+    margin: 20px 0 30px;
+}
