@@ -100,7 +100,7 @@ const ContactsPageMain = () => {
 
                                     <div className="office-info__item">
                                         <span className="office-info__label">Адрес:</span>
-                                        <span className="office-info__value">г. Москва, ул. Малышева, стр. 164, оф.406</span>
+                                        <span className="office-info__value">г. Москва, ул. Жебрунова, 6/1, оф.</span>
                                     </div>
 
                                     <div className="office-info__item">

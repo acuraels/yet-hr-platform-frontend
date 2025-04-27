@@ -116,7 +116,11 @@
 }
 
 .office-info__button:hover {
-    background-color: #f0f0f0;
+    background-color: #FFF176;
+}
+
+.office-info__button:active {
+    background-color: #c0b12a;
 }
 
 .office-map {

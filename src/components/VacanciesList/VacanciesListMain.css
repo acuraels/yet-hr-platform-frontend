@@ -95,7 +95,11 @@
 }
 
 .vacancy-card__button:hover {
-    background-color: #f0f0f0;
+    background-color: #FFF176;
+}
+
+.vacancy-card__button:active {
+    background-color: #c0b12a;
 }
 
 .vacancy-card__salary {
