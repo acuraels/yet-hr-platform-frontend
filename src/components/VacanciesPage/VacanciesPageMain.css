@@ -15,6 +15,18 @@
     }
 }
 
+.vacancy-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: transform .3s ease, background .3s ease;
+}
+
+.vacancy-card:hover {
+    transform: scale(1.025);
+}
+
 .vacancies-page__title {
     font-size: 32px;
     font-weight: bold;

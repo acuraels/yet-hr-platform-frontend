@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import "./VacanciesResponsesMain.css"
@@ -164,44 +162,50 @@ const VacanciesResponsesMain = () => {
                     {/* Список кандидатов */}
                     <div className="vacancies-responses__candidates-list">
                         {filteredCandidates.map((candidate) => (
-                            <div key={candidate.id} className={`candidate-card ${getCardClass(candidate.status)}`}>
-                                <div className="candidate-card__left">
-                                    <div className="candidate-card__tags">
-                                        {candidate.tags.map((tag, index) => (
-                                            <span key={index} className="candidate-card__tag">
-                                                {tag}
-                                            </span>
-                                        ))}
+                            <Link
+                                key={candidate.id}
+                                to={`/vacancies-responses/${candidate.id}?tab=${activeTab}`}
+                                className="candidate-card-link"
+                            >
+                                <div className={`candidate-card ${getCardClass(candidate.status)}`}>
+                                    <div className="candidate-card__left">
+                                        <div className="candidate-card__tags">
+                                            {candidate.tags.map((tag, index) => (
+                                                <span key={index} className="candidate-card__tag">
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                        <h3 className="candidate-card__position">{candidate.position}</h3>
+                                        <p className="candidate-card__description">{candidate.description}</p>
+                                        <p className="candidate-card__experience">{candidate.experience}</p>
+                                        {candidate.additionalInfo && (
+                                            <p className="candidate-card__additional-info">{candidate.additionalInfo}</p>
+                                        )}
                                     </div>
-                                    <h3 className="candidate-card__position">{candidate.position}</h3>
-                                    <p className="candidate-card__description">{candidate.description}</p>
-                                    <p className="candidate-card__experience">{candidate.experience}</p>
-                                    {candidate.additionalInfo && (
-                                        <p className="candidate-card__additional-info">{candidate.additionalInfo}</p>
-                                    )}
-                                </div>
-                                <div className="candidate-card__right">
-                                    <div className="candidate-card__response-info">
-                                        <p className="candidate-card__response-label">Отклик в</p>
-                                        <div className="candidate-card__response-datetime">
-                                            <span className="candidate-card__response-time">{candidate.time}</span>
-                                            <span className="candidate-card__response-date">{candidate.date}</span>
+                                    <div className="candidate-card__right">
+                                        <div className="candidate-card__response-info">
+                                            <p className="candidate-card__response-label">Отклик в</p>
+                                            <div className="candidate-card__response-datetime">
+                                                <span className="candidate-card__response-time">{candidate.time}</span>
+                                                <span className="candidate-card__response-date">{candidate.date}</span>
+                                            </div>
+                                        </div>
+                                        <div className="candidate-card__candidate-info">
+                                            <p className="candidate-card__candidate-name">
+                                                {candidate.name}, {candidate.age} лет
+                                            </p>
+                                            <p className="candidate-card__candidate-email">{candidate.email}</p>
+                                            <p className="candidate-card__candidate-phone">{candidate.phone}</p>
+                                            <p
+                                                className={`candidate-card__candidate-experience ${candidate.candidateExperience === "Без опыта" ? "candidate-card__candidate-experience--none" : ""}`}
+                                            >
+                                                {candidate.candidateExperience}
+                                            </p>
                                         </div>
                                     </div>
-                                    <div className="candidate-card__candidate-info">
-                                        <p className="candidate-card__candidate-name">
-                                            {candidate.name}, {candidate.age} лет
-                                        </p>
-                                        <p className="candidate-card__candidate-email">{candidate.email}</p>
-                                        <p className="candidate-card__candidate-phone">{candidate.phone}</p>
-                                        <p
-                                            className={`candidate-card__candidate-experience ${candidate.candidateExperience === "Без опыта" ? "candidate-card__candidate-experience--none" : ""}`}
-                                        >
-                                            {candidate.candidateExperience}
-                                        </p>
-                                    </div>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
 

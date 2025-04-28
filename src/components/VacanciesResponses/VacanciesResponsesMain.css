@@ -16,6 +16,21 @@
     }
 }
 
+.candidate-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    margin-bottom: 16px;
+}
+
+.candidate-card {
+    transition: transform .3s ease, background .3s ease;
+}
+
+.candidate-card-link:hover .candidate-card {
+    transform: scale(1.025);
+}
+
 .vacancies-responses__main-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -122,10 +137,6 @@
     transition: all 0.2s;
     text-align: center;
     border: 1px solid #e0e0e0;
-}
-
-.vacancies-responses__tab:hover {
-    background-color: #e9e9e9;
 }
 
 .vacancies-responses__tab--active {

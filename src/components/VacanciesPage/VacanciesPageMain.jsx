@@ -176,31 +176,41 @@ const VacanciesPageMain = () => {
                 <div className="vacancies-page__content">
                     <div className="vacancies-page__list">
                         {currentVacancies.map((vacancy) => (
-                            <div key={vacancy.id} className="vacancy-card">
-                                <div className="vacancy-card__tags">
-                                    {vacancy.location && (
-                                        <span className="vacancy-card__tag">{`г. ${vacancy.location}`}</span>
-                                    )}
-                                    {vacancy.format && (
-                                        <span className="vacancy-card__tag">{vacancy.format}</span>
-                                    )}
-                                </div>
+                            <Link
+                                key={vacancy.id}
+                                to={`/vacancies/${vacancy.id}`}
+                                className="vacancy-card"
+                            >
+                                <div className="vacancy-card__content">
+                                    <div className="vacancy-card__tags">
+                                        {vacancy.location && (
+                                            <span className="vacancy-card__tag">{`г. ${vacancy.location}`}</span>
+                                        )}
+                                        {vacancy.format && (
+                                            <span className="vacancy-card__tag">{vacancy.format}</span>
+                                        )}
+                                    </div>
 
-                                <h2 className="vacancy-card__title">{vacancy.title}</h2>
-                                <p className="vacancy-card__description">{vacancy.description}</p>
+                                    <h2 className="vacancy-card__title">{vacancy.title}</h2>
+                                    <p className="vacancy-card__description">{vacancy.description}</p>
 
-                                <div className="vacancy-card__footer">
-                                    <button
-                                        className="vacancy-card__button"
-                                        onClick={() => openApplyModal(vacancy)}
-                                    >
-                                        Откликнуться
-                                    </button>
-                                    {vacancy.salary && (
-                                        <span className="vacancy-card__salary">В среднем {vacancy.salary} ₽</span>
-                                    )}
+                                    <div className="vacancy-card__footer">
+                                        <button
+                                            className="vacancy-card__button"
+                                            onClick={(e) => {
+                                                e.preventDefault(); // Prevent the Link navigation
+                                                e.stopPropagation(); // Prevent any parent click handlers
+                                                openApplyModal(vacancy);
+                                            }}
+                                        >
+                                            Откликнуться
+                                        </button>
+                                        {vacancy.salary && (
+                                            <span className="vacancy-card__salary">В среднем {vacancy.salary} ₽</span>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
 
                         <div className="pagination">

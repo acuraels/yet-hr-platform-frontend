@@ -1,0 +1,376 @@
+.response-page__main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.response-page__container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+}
+
+.response-page__loading,
+.response-page__error {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+    color: #666;
+}
+
+.response-page__error {
+    color: #d32f2f;
+}
+
+/* Header section */
+.response-page__header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    margin-top: 50px;
+    position: relative;
+}
+
+.response-page__back-link {
+    font-size: 24px;
+    text-decoration: none;
+    color: #000;
+    margin-right: 20px;
+    line-height: 1;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.response-page__back-link:hover {
+    color: #eee600;
+}
+
+.response-page__meta {
+    flex: 1;
+}
+
+.response-page__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.response-page__tag {
+    background-color: #fee600;
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: #000;
+}
+
+.response-page__title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+}
+
+.response-page__description {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.response-page__datetime {
+    text-align: right;
+    color: #666;
+    font-size: 14px;
+}
+
+.response-page__time-date {
+    font-weight: bold;
+    color: #000;
+    margin-top: 4px;
+}
+
+.response-page__time {
+    margin-right: 8px;
+}
+
+/* Content section */
+.response-page__content {
+    display: flex;
+    gap: 30px;
+}
+
+.response-page__left-column {
+    flex: 1;
+}
+
+.response-page__right-column {
+    width: 300px;
+}
+
+/* Candidate info */
+.response-page__candidate-info {
+    margin-bottom: 24px;
+}
+
+.response-page__candidate-name {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+}
+
+.response-page__candidate-email,
+.response-page__candidate-phone {
+    margin: 0 0 4px 0;
+    color: #666;
+}
+
+.response-page__candidate-experience {
+    margin: 8px 0 0 0;
+    color: #1b5e20;
+    font-weight: bold;
+}
+
+.response-page__candidate-experience--none {
+    color: #8b0000;
+}
+
+/* Resume actions */
+.response-page__resume-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.response-page__download-button {
+    display: flex;
+    align-items: baseline;
+    width: 50%;
+    justify-content: center;
+    gap: 8px;
+    background-color: #fee600;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.response-page__download-button:hover {
+    background-color: #e6cf00;
+}
+
+.response-page__download-icon {
+    font-size: 16px;
+}
+
+.response-page__resume-link {
+    color: #1976d2;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.response-page__resume-link:hover {
+    text-decoration: underline;
+    color: #eee600;
+    transform: scale(1.01);
+}
+
+/* Additional info */
+.response-page__additional-info {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+.response-page__section-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 0 12px 0;
+}
+
+.response-page__additional-text {
+    margin: 0;
+    white-space: pre-line;
+    color: #333;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Status section */
+.response-page__status-section {
+    margin-bottom: 24px;
+}
+
+.response-page__status-dropdown {
+    position: relative;
+}
+
+.response-page__status-button {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.response-page__dropdown-arrow {
+    font-size: 10px;
+    margin-left: 8px;
+}
+
+.response-page__status-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 4px;
+    overflow: hidden;
+}
+
+.response-page__status-option {
+    width: 100%;
+    padding: 10px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.response-page__status-option:hover {
+    background-color: #f5f5f5;
+}
+
+/* Status colors */
+.response-page__status-option--not-sorted,
+.response-page__status-button.response-page__status-option--not-sorted {
+    background-color: #666;
+    color: white;
+}
+
+.response-page__status-option--rejected,
+.response-page__status-button.response-page__status-option--rejected {
+    background-color: #8b0000;
+    color: white;
+}
+
+.response-page__status-option--approved,
+.response-page__status-button.response-page__status-option--approved {
+    background-color: #1a237e;
+    color: white;
+}
+
+.response-page__status-option--meeting,
+.response-page__status-button.response-page__status-option--meeting {
+    background-color: #1b5e20;
+    color: white;
+}
+
+.response-page__status-option--archived,
+.response-page__status-button.response-page__status-option--archived {
+    background-color: #424242;
+    color: white;
+}
+
+/* Notes section */
+.response-page__notes-section {
+    margin-bottom: 24px;
+}
+
+.response-page__notes-textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.response-page__notes-textarea:focus {
+    outline: none;
+    border-color: #fee600;
+    box-shadow: 0 0 0 2px rgba(254, 230, 0, 0.2);
+}
+
+/* Save button */
+.response-page__save-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #e0e0e0;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.response-page__save-button:hover {
+    background-color: #d0d0d0;
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+    .response-page__content {
+        flex-direction: column;
+    }
+
+    .response-page__right-column {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .response-page__header {
+        flex-direction: column;
+    }
+
+    .response-page__back-link {
+        margin-bottom: 16px;
+    }
+
+    .response-page__datetime {
+        text-align: left;
+        margin-top: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .response-page__container {
+        padding: 16px;
+    }
+
+    .response-page__title {
+        font-size: 20px;
+    }
+
+    .response-page__candidate-name {
+        font-size: 18px;
+    }
+}
