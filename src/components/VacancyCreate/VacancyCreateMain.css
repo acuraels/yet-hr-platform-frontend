@@ -1,0 +1,172 @@
+/* Центрируем блок по экрану */
+.vacancy-create__main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 100px 0 40px;
+}
+
+/* Контейнер формы */
+.vacancy-create__container {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 32px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовок */
+.title {
+    font-size: 24px;
+    margin-bottom: 24px;
+}
+
+/* Общие группы полей */
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"] {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+/* Подзаголовок для фильтров */
+.subtitle {
+    display: block;
+    margin-bottom: 16px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* Сетка фильтров */
+.filters-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.filters-grid-name {
+    padding-bottom: 15px;
+    font-weight: normal;
+}
+
+/* Чекбоксы */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.checkbox-label input {
+    margin-right: 8px;
+}
+
+/* Маленькие поля ввода (числа, короткие текста) */
+.small-inputs label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.small-inputs input {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+/* Кнопки */
+.buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-next,
+.btn-publish {
+    background: #eee600;
+    color: #000;
+}
+
+.btn-back {
+    background: #fff;
+    color: #000;
+    border: 1px solid #ccc;
+    margin-right: 8px;
+}
+
+/* Стили для Tiptap */
+.editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.editor-toolbar button {
+    background: none;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.editor-content {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px;
+    min-height: 200px;
+}
+
+/* Модальное окно */
+.modal-window {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    flex-direction: column;
+    gap: 20px;
+    background-color: white;
+}
+
+/* Мобильная версия до 640px */
+@media (max-width: 640px) {
+    .filters-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    /* внутри small-inputs выравниваем input по низу ячейки */
+    .filters-grid .small-inputs {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+}

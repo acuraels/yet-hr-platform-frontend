@@ -50,6 +50,13 @@
     border-radius: 8px;
     padding: 24px 0;
     margin-bottom: 16px;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.vacancy-card-hr:hover {
+    transform: scale(1.025);
 }
 
 .vacancy-card__tags {
@@ -497,6 +504,8 @@
 .hr-vacancies-header__create-btn {
     background-color: #fee600;
     border: none;
+    text-decoration: none;
+    color: #000;
     border-radius: 15px;
     padding: 12px 36px;
     font-weight: 500;

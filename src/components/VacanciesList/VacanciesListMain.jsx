@@ -183,7 +183,7 @@ const VacanciesListMain = () => {
                         {isArchive ? (
                             <span className="hr-vacancies-header__archive-label">в архиве</span>
                         ) : (
-                            <button className="hr-vacancies-header__create-btn">Создать</button>
+                            <Link to="/vacancy-create" className="hr-vacancies-header__create-btn">Создать</Link>
                         )}
                         <div className="hr-vacancies-header__bottom-row">
                             <button
@@ -199,7 +199,7 @@ const VacanciesListMain = () => {
                 <div className="vacancies-page__content">
                     <div className="vacancies-page__list">
                         {currentVacancies.map((vacancy) => (
-                            <div key={vacancy.id} className="vacancy-card-hr">
+                            <Link to="/vacancy-edit" key={vacancy.id} className="vacancy-card">
                                 <div className="vacancy-card__tags">
                                     {vacancy.location && (
                                         <span className="vacancy-card__tag">{`г. ${vacancy.location}`}</span>
@@ -217,7 +217,7 @@ const VacanciesListMain = () => {
                                         <span className="vacancy-card__salary">В среднем {vacancy.salary} ₽</span>
                                     )}
                                 </div>
-                            </div>
+                            </Link>
                         ))}
 
                         <div className="pagination">
