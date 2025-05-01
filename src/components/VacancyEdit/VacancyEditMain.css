@@ -40,6 +40,7 @@
     padding: 8px 12px;
     border: 1px solid #ccc;
     border-radius: 8px;
+    border: 1px solid #eee600
 }
 
 /* Подзаголовок для фильтров */
@@ -133,9 +134,9 @@
 }
 
 .editor-content {
-    border: 1px solid #ccc;
+    border: 1px solid #eee600;
     border-radius: 8px;
-    padding: 12px;
+    padding: 24px;
     min-height: 200px;
 }
 

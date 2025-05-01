@@ -224,18 +224,18 @@ const VacancyEditMain = () => {
                         </div>
 
                         <div className="editor-toolbar">
-                            <button onClick={() => editor.chain().focus().toggleBold().run()}>B</button>
-                            <button onClick={() => editor.chain().focus().toggleItalic().run()}>i</button>
-                            <button onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>H2</button>
-                            <button onClick={() => editor.chain().focus().toggleBulletList().run()}>• List</button>
-                            <button onClick={() => editor.chain().focus().toggleOrderedList().run()}>1. List</button>
+                            <button onClick={() => editor.chain().focus().toggleBold().run()}>Жирный</button>
+                            <button onClick={() => editor.chain().focus().toggleItalic().run()}>Курсив</button>
+                            <button onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>Заголовок</button>
+                            <button onClick={() => editor.chain().focus().toggleBulletList().run()}>Список</button>
+                            <button onClick={() => editor.chain().focus().toggleOrderedList().run()}>Нумерован. список</button>
                             <button
                                 onClick={() => {
                                     const url = prompt('Введите URL ссылки')
                                     url && editor.chain().focus().setLink({ href: url }).run()
                                 }}
                             >
-                                Link
+                                Ссылка
                             </button>
                         </div>
 
