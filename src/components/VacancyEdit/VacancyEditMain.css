@@ -1,3 +1,17 @@
+.salary-pair {
+    display: flex;
+    align-items: center
+}
+
+.salary-field {
+    width: 90px;
+    padding: 4px 6px
+}
+
+.salary-dash {
+    margin: 0 4px
+}
+
 /* Центрируем блок по экрану */
 .vacancy-create__main {
     display: flex;

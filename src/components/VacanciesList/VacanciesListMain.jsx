@@ -1,190 +1,184 @@
-import { useState } from "react"
-import { Link } from "react-router-dom"
-import "./VacanciesListMain.css"
+// src/components/VacanciesListMain/VacanciesListMain.jsx
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import axiosInstance from "../../utils/axiosInstance";
+import "./VacanciesListMain.css";
+
+/** Человечные подписи для work_format, приходящего из бэка */
+const WORK_FORMAT_LABELS = {
+    ON_SITE: "В офисе",
+    REMOTE: "Удаленно",
+    HYBRID: "Гибрид",
+    FIELD_WORK: "Разъездная работа",
+};
 
 const VacanciesListMain = () => {
-    const [currentPage, setCurrentPage] = useState(1)
-    const vacanciesPerPage = 4
-    const [isArchive, setIsArchive] = useState(false)
+    /** --------------------------- базовые стейты --------------------------- */
+    const [isArchive, setIsArchive] = useState(false);
+    const [vacancies, setVacancies] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Состояния для модальных окон
-    const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
-    const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false)
-    const [currentVacancy, setCurrentVacancy] = useState(null)
-    const [applyStep, setApplyStep] = useState(1)
-    const [suggestStep, setSuggestStep] = useState(1)
-    const [fileUploaded, setFileUploaded] = useState(false)
+    /** ------ пагинация ------ */
+    const [currentPage, setCurrentPage] = useState(1);
+    const vacanciesPerPage = 4;
 
-    // Данные форм
+    /** -------------------- модалки и формы (не меняем вёрстку) ------------- */
+    const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+    const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
+    const [currentVacancy, setCurrentVacancy] = useState(null);
+    const [applyStep, setApplyStep] = useState(1);
+    const [suggestStep, setSuggestStep] = useState(1);
+    const [fileUploaded, setFileUploaded] = useState(false);
+
     const [applyFormData, setApplyFormData] = useState({
-        fullName: '',
-        birthDate: '',
-        phone: '',
-        email: '',
-        experience: '',
-        resumeLink: '',
-        additionalInfo: ''
-    })
+        fullName: "",
+        birthDate: "",
+        phone: "",
+        email: "",
+        experience: "",
+        resumeLink: "",
+        additionalInfo: "",
+    });
 
     const [suggestFormData, setSuggestFormData] = useState({
-        fullName: '',
-        birthDate: '',
-        phone: '',
-        email: '',
-        desiredRole: '',
-        experience: '',
-        resumeLink: '',
-        additionalInfo: ''
-    })
+        fullName: "",
+        birthDate: "",
+        phone: "",
+        email: "",
+        desiredRole: "",
+        experience: "",
+        resumeLink: "",
+        additionalInfo: "",
+    });
 
-    // Данные о вакансиях
-    const vacancies = [
-        {
-            id: 1,
-            title: "Название вакансии",
-            description: "Короткое описание вакансии. Короткое описание вакансии.",
-            location: "Екатеринбург",
-            format: "В офисе",
-            salary: "87 000",
-        },
-        {
-            id: 2,
-            title: "Название вакансии",
-            description: "Короткое описание вакансии. Короткое описание вакансии.",
-            location: "Калининград",
-            format: "Удаленно",
-        },
-        {
-            id: 3,
-            title: "Название вакансии",
-            description: "Короткое описание вакансии. Короткое описание вакансии.",
-            location: "Любой город",
-            format: "Удаленно",
-            salary: "87 000",
-        },
-        {
-            id: 4,
-            title: "Название вакансии",
-            description: "Короткое описание вакансии. Короткое описание вакансии.",
-            location: "Любой город",
-            format: "Удаленно",
-            salary: "87 000",
-        },
-        {
-            id: 5,
-            title: "Название вакансии",
-            description: "Короткое описание вакансии. Короткое описание вакансии.",
-            location: "Москва",
-            format: "Гибрид",
-            salary: "95 000",
-        },
-        {
-            id: 6,
-            title: "Название вакансии",
-            description: "Короткое описание вакансии. Короткое описание вакансии.",
-            location: "Сыктывкар",
-            format: "В офисе",
-            salary: "75 000",
-        },
-    ]
+    /** ------------------- загрузка вакансий с бэка ------------------------- */
+    useEffect(() => {
+        const fetchVacancies = async () => {
+            setLoading(true);
+            try {
+                // /api/v1/vacancies/?archived=true|false
+                const { data } = await axiosInstance.get(
+                    `vacancies/?archived=${isArchive}`
+                );
 
-    // Расчет пагинации
-    const indexOfLastVacancy = currentPage * vacanciesPerPage
-    const indexOfFirstVacancy = indexOfLastVacancy - vacanciesPerPage
-    const currentVacancies = vacancies.slice(indexOfFirstVacancy, indexOfLastVacancy)
-    const totalPages = Math.ceil(vacancies.length / vacanciesPerPage)
+                const mapped = data.map((v) => {
+                    const salaryMid =
+                        v.salary_from && v.salary_to
+                            ? Math.floor((v.salary_from + v.salary_to) / 2)
+                            : v.salary_from || v.salary_to || null;
 
-    // Функция для изменения страницы
-    const handlePageChange = (page) => {
-        setCurrentPage(page)
-    }
+                    return {
+                        id: v.id,
+                        title: v.title,
+                        description: v.short_description,
+                        location: v.area, // бэкенд присылает имя региона
+                        format: WORK_FORMAT_LABELS[v.work_format] || "",
+                        salary: salaryMid ? salaryMid.toLocaleString("ru-RU") : null,
+                    };
+                });
 
-    // Функция для переключения между обычным режимом и архивом
-    const toggleArchive = () => {
-        setIsArchive(!isArchive)
-    }
+                setVacancies(mapped);
+            } catch (err) {
+                console.error("Ошибка загрузки вакансий:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    // Функции для модальных окон
+        fetchVacancies();
+        setCurrentPage(1); // сброс страницы при переключении режима
+    }, [isArchive]);
+
+    /** ------------------------ пагинация ---------------------------------- */
+    const indexOfLastVacancy = currentPage * vacanciesPerPage;
+    const indexOfFirstVacancy = indexOfLastVacancy - vacanciesPerPage;
+    const currentVacancies = vacancies.slice(
+        indexOfFirstVacancy,
+        indexOfLastVacancy
+    );
+    const totalPages = Math.max(1, Math.ceil(vacancies.length / vacanciesPerPage));
+
+    const handlePageChange = (page) => setCurrentPage(page);
+    const toggleArchive = () => setIsArchive((prev) => !prev);
+
+    /** ------------------ модальные обработчики (как раньше) ---------------- */
     const openApplyModal = (vacancy) => {
-        setCurrentVacancy(vacancy)
-        setApplyStep(1)
-        setIsApplyModalOpen(true)
-        setFileUploaded(false)
-    }
+        setCurrentVacancy(vacancy);
+        setApplyStep(1);
+        setIsApplyModalOpen(true);
+        setFileUploaded(false);
+    };
 
     const openSuggestModal = () => {
-        setSuggestStep(1)
-        setIsSuggestModalOpen(true)
-        setFileUploaded(false)
-    }
+        setSuggestStep(1);
+        setIsSuggestModalOpen(true);
+        setFileUploaded(false);
+    };
 
     const closeApplyModal = () => {
-        setIsApplyModalOpen(false)
+        setIsApplyModalOpen(false);
         setApplyFormData({
-            fullName: '',
-            birthDate: '',
-            phone: '',
-            email: '',
-            experience: '',
-            resumeLink: '',
-            additionalInfo: ''
-        })
-    }
+            fullName: "",
+            birthDate: "",
+            phone: "",
+            email: "",
+            experience: "",
+            resumeLink: "",
+            additionalInfo: "",
+        });
+    };
 
     const closeSuggestModal = () => {
-        setIsSuggestModalOpen(false)
+        setIsSuggestModalOpen(false);
         setSuggestFormData({
-            fullName: '',
-            birthDate: '',
-            phone: '',
-            email: '',
-            desiredRole: '',
-            experience: '',
-            resumeLink: '',
-            additionalInfo: ''
-        })
-    }
+            fullName: "",
+            birthDate: "",
+            phone: "",
+            email: "",
+            desiredRole: "",
+            experience: "",
+            resumeLink: "",
+            additionalInfo: "",
+        });
+    };
 
-    // Обработчики изменения полей форм
-    const handleApplyFormChange = (e) => {
-        const { name, value } = e.target
-        setApplyFormData(prev => ({ ...prev, [name]: value }))
-    }
+    const handleApplyFormChange = (e) =>
+        setApplyFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
-    const handleSuggestFormChange = (e) => {
-        const { name, value } = e.target
-        setSuggestFormData(prev => ({ ...prev, [name]: value }))
-    }
+    const handleSuggestFormChange = (e) =>
+        setSuggestFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
-    // Обработчики отправки форм
     const handleApplySubmit = (e) => {
-        e.preventDefault()
-        setApplyStep(3) // Переход к шагу "Заявка отправлена"
-        // Здесь можно добавить логику отправки данных на сервер
-    }
+        e.preventDefault();
+        setApplyStep(3);
+        // TODO: здесь POST отклика
+    };
 
     const handleSuggestSubmit = (e) => {
-        e.preventDefault()
-        setSuggestStep(4) // Переход к шагу "Заявка отправлена"
-        // Здесь можно добавить логику отправки данных на сервер
-    }
+        e.preventDefault();
+        setSuggestStep(4);
+        // TODO: здесь POST предложения
+    };
 
-    // Обработчик загрузки файла
-    const handleFileUpload = () => {
-        setFileUploaded(true)
-    }
+    const handleFileUpload = () => setFileUploaded(true);
 
+    /** ----------------------------- рендер ------------------------------- */
     return (
         <main className="vacancies-page__main">
             <div className="vacancies-page__main-container">
+                {/* ------------------ заголовок ------------------ */}
                 <div className="hr-vacancies-header">
                     <div className="hr-vacancies-header__top-row">
                         <h1 className="hr-vacancies-header__heading">Вакансии</h1>
+
                         {isArchive ? (
                             <span className="hr-vacancies-header__archive-label">в архиве</span>
                         ) : (
-                            <Link to="/vacancy-create" className="hr-vacancies-header__create-btn">Создать</Link>
+                            <Link to="/vacancy-create" className="hr-vacancies-header__create-btn">
+                                Создать
+                            </Link>
                         )}
+
                         <div className="hr-vacancies-header__bottom-row">
                             <button
                                 className="hr-vacancies-header__archive-btn"
@@ -196,60 +190,82 @@ const VacanciesListMain = () => {
                     </div>
                 </div>
 
+                {/* ------------------ контент ------------------ */}
                 <div className="vacancies-page__content">
+                    {/* --------- список --------- */}
                     <div className="vacancies-page__list">
-                        {currentVacancies.map((vacancy) => (
-                            <Link to="/vacancy-edit" key={vacancy.id} className="vacancy-card">
-                                <div className="vacancy-card__tags">
-                                    {vacancy.location && (
-                                        <span className="vacancy-card__tag">{`г. ${vacancy.location}`}</span>
-                                    )}
-                                    {vacancy.format && (
-                                        <span className="vacancy-card__tag">{vacancy.format}</span>
-                                    )}
-                                </div>
+                        {loading && <p className="vacancies-loading">Загрузка...</p>}
 
-                                <h2 className="vacancy-card__title">{vacancy.title}</h2>
-                                <p className="vacancy-card__description">{vacancy.description}</p>
-
-                                <div className="vacancy-card__footer">
-                                    {vacancy.salary && (
-                                        <span className="vacancy-card__salary">В среднем {vacancy.salary} ₽</span>
-                                    )}
-                                </div>
-                            </Link>
-                        ))}
-
-                        <div className="pagination">
-                            <button
-                                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                                disabled={currentPage === 1}
-                                className="pagination__button"
-                            >
-                                &lt;
-                            </button>
-
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                                <button
-                                    key={page}
-                                    onClick={() => handlePageChange(page)}
-                                    className={`pagination__button ${currentPage === page ? "pagination__button--active" : ""
-                                        }`}
+                        {!loading &&
+                            currentVacancies.map((vacancy) => (
+                                <Link
+                                    to={`/vacancy-edit/${vacancy.id}`}
+                                    key={vacancy.id}
+                                    className="vacancy-card"
                                 >
-                                    {page}
-                                </button>
+                                    <div className="vacancy-card__tags">
+                                        {vacancy.location && (
+                                            <span className="vacancy-card__tag">
+                                                {`г. ${vacancy.location}`}
+                                            </span>
+                                        )}
+                                        {vacancy.format && (
+                                            <span className="vacancy-card__tag">{vacancy.format}</span>
+                                        )}
+                                    </div>
+
+                                    <h2 className="vacancy-card__title">{vacancy.title}</h2>
+                                    <p className="vacancy-card__description">
+                                        {vacancy.description}
+                                    </p>
+
+                                    <div className="vacancy-card__footer">
+                                        {vacancy.salary && (
+                                            <span className="vacancy-card__salary">
+                                                В среднем {vacancy.salary} ₽
+                                            </span>
+                                        )}
+                                    </div>
+                                </Link>
                             ))}
 
-                            <button
-                                onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                                disabled={currentPage === totalPages}
-                                className="pagination__button"
-                            >
-                                &gt;
-                            </button>
-                        </div>
+                        {!loading && (
+                            <div className="pagination">
+                                <button
+                                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                                    disabled={currentPage === 1}
+                                    className="pagination__button"
+                                >
+                                    &lt;
+                                </button>
+
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                                    (page) => (
+                                        <button
+                                            key={page}
+                                            onClick={() => handlePageChange(page)}
+                                            className={`pagination__button ${currentPage === page ? "pagination__button--active" : ""
+                                                }`}
+                                        >
+                                            {page}
+                                        </button>
+                                    )
+                                )}
+
+                                <button
+                                    onClick={() =>
+                                        handlePageChange(Math.min(totalPages, currentPage + 1))
+                                    }
+                                    disabled={currentPage === totalPages}
+                                    className="pagination__button"
+                                >
+                                    &gt;
+                                </button>
+                            </div>
+                        )}
                     </div>
 
+                    {/* --------- сайдбар с фильтрами (как был) --------- */}
                     <div className="vacancies-page__sidebar">
                         <div className="filters">
                             <h2 className="filters__title">Фильтры</h2>
@@ -302,7 +318,7 @@ const VacanciesListMain = () => {
                 </div>
             </div>
 
-            {/* Модальное окно для отклика на вакансию */}
+            {/* ---------------- модальное окно отклика ---------------- */}
             {isApplyModalOpen && (
                 <div className="modal">
                     <div className="modal__overlay" onClick={closeApplyModal}></div>
@@ -313,7 +329,12 @@ const VacanciesListMain = () => {
                                 {currentVacancy && (
                                     <p className="modal__vacancy-title">{currentVacancy.title}</p>
                                 )}
-                                <form onSubmit={(e) => { e.preventDefault(); setApplyStep(2); }}>
+                                <form
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        setApplyStep(2);
+                                    }}
+                                >
                                     <div className="modal__form-container">
                                         <h3 className="modal__form-title">Заполните информацию</h3>
                                         <div className="modal__form-fields">
@@ -356,7 +377,9 @@ const VacanciesListMain = () => {
                                                 />
                                             </div>
                                         </div>
-                                        <button type="submit" className="modal__button">Далее</button>
+                                        <button type="submit" className="modal__button">
+                                            Далее
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -364,7 +387,7 @@ const VacanciesListMain = () => {
 
                         {applyStep === 2 && (
                             <div className="modal__step">
-                                <h2 className="modal__title">Заявка - шаг 2</h2>
+                                <h2 className="modal__title">Заявка – шаг 2</h2>
                                 <form onSubmit={handleApplySubmit}>
                                     <div className="modal__form-container">
                                         <h3 className="modal__form-title">Заполните информацию</h3>
@@ -380,14 +403,21 @@ const VacanciesListMain = () => {
                                             />
                                             <div className="modal__upload-container">
                                                 <div className="modal__upload-options">
-                                                    <label className={`modal__upload-button ${fileUploaded ? 'modal__upload-button--uploaded' : ''}`}>
+                                                    <label
+                                                        className={`modal__upload-button ${fileUploaded
+                                                            ? "modal__upload-button--uploaded"
+                                                            : ""
+                                                            }`}
+                                                    >
                                                         <input
                                                             type="file"
                                                             onChange={handleFileUpload}
-                                                            style={{ display: 'none' }}
+                                                            style={{ display: "none" }}
                                                         />
                                                         <span>Загрузить резюме</span>
-                                                        {fileUploaded && <span className="modal__upload-icon">✓</span>}
+                                                        {fileUploaded && (
+                                                            <span className="modal__upload-icon">✓</span>
+                                                        )}
                                                     </label>
                                                     <span className="modal__upload-or">или</span>
                                                     <input
@@ -416,7 +446,12 @@ const VacanciesListMain = () => {
                                             >
                                                 Назад
                                             </button>
-                                            <button type="submit" className="modal__button modal__button--submit">Отправить</button>
+                                            <button
+                                                type="submit"
+                                                className="modal__button modal__button--submit"
+                                            >
+                                                Отправить
+                                            </button>
                                         </div>
                                     </div>
                                 </form>
@@ -426,7 +461,9 @@ const VacanciesListMain = () => {
                         {applyStep === 3 && (
                             <div className="modal__step modal__step--success">
                                 <h2 className="modal__title">Заявка отправлена</h2>
-                                <p className="modal__success-message">Скоро вас рассмотрит наш нанимающий менеджер</p>
+                                <p className="modal__success-message">
+                                    Скоро вас рассмотрит наш нанимающий менеджер
+                                </p>
                                 <button
                                     className="modal__button modal__button--close"
                                     onClick={closeApplyModal}
@@ -439,7 +476,7 @@ const VacanciesListMain = () => {
                 </div>
             )}
 
-            {/* Модальное окно для предложения кандидатуры */}
+            {/* ---------------- модальное окно «предложить кандидатуру» -------- */}
             {isSuggestModalOpen && (
                 <div className="modal">
                     <div className="modal__overlay" onClick={closeSuggestModal}></div>
@@ -447,7 +484,12 @@ const VacanciesListMain = () => {
                         {suggestStep === 1 && (
                             <div className="modal__step">
                                 <h2 className="modal__title">Предложить кандидатуру</h2>
-                                <form onSubmit={(e) => { e.preventDefault(); setSuggestStep(2); }}>
+                                <form
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        setSuggestStep(2);
+                                    }}
+                                >
                                     <div className="modal__form-container">
                                         <h3 className="modal__form-title">Заполните информацию</h3>
                                         <div className="modal__form-fields">
@@ -490,7 +532,9 @@ const VacanciesListMain = () => {
                                                 />
                                             </div>
                                         </div>
-                                        <button type="submit" className="modal__button">Далее</button>
+                                        <button type="submit" className="modal__button">
+                                            Далее
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -498,7 +542,7 @@ const VacanciesListMain = () => {
 
                         {suggestStep === 2 && (
                             <div className="modal__step">
-                                <h2 className="modal__title">Заявка - шаг 2</h2>
+                                <h2 className="modal__title">Заявка – шаг 2</h2>
                                 <form onSubmit={handleSuggestSubmit}>
                                     <div className="modal__form-container">
                                         <h3 className="modal__form-title">Заполните информацию</h3>
@@ -523,14 +567,21 @@ const VacanciesListMain = () => {
                                             />
                                             <div className="modal__upload-container">
                                                 <div className="modal__upload-options">
-                                                    <label className={`modal__upload-button ${fileUploaded ? 'modal__upload-button--uploaded' : ''}`}>
+                                                    <label
+                                                        className={`modal__upload-button ${fileUploaded
+                                                            ? "modal__upload-button--uploaded"
+                                                            : ""
+                                                            }`}
+                                                    >
                                                         <input
                                                             type="file"
                                                             onChange={handleFileUpload}
-                                                            style={{ display: 'none' }}
+                                                            style={{ display: "none" }}
                                                         />
                                                         <span>Загрузить резюме</span>
-                                                        {fileUploaded && <span className="modal__upload-icon">✓</span>}
+                                                        {fileUploaded && (
+                                                            <span className="modal__upload-icon">✓</span>
+                                                        )}
                                                     </label>
                                                     <span className="modal__upload-or">или</span>
                                                     <input
@@ -559,7 +610,12 @@ const VacanciesListMain = () => {
                                             >
                                                 Назад
                                             </button>
-                                            <button type="submit" className="modal__button modal__button--submit">Отправить</button>
+                                            <button
+                                                type="submit"
+                                                className="modal__button modal__button--submit"
+                                            >
+                                                Отправить
+                                            </button>
                                         </div>
                                     </div>
                                 </form>
@@ -569,7 +625,9 @@ const VacanciesListMain = () => {
                         {suggestStep === 4 && (
                             <div className="modal__step modal__step--success">
                                 <h2 className="modal__title">Заявка отправлена</h2>
-                                <p className="modal__success-message">Скоро вас рассмотрит наш нанимающий менеджер</p>
+                                <p className="modal__success-message">
+                                    Скоро вас рассмотрит наш нанимающий менеджер
+                                </p>
                                 <button
                                     className="modal__button modal__button--close"
                                     onClick={closeSuggestModal}
@@ -582,7 +640,7 @@ const VacanciesListMain = () => {
                 </div>
             )}
         </main>
-    )
-}
+    );
+};
 
 export default VacanciesListMain;

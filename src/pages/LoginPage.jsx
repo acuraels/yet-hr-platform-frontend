@@ -1,11 +1,11 @@
 import React from 'react';
-import HeaderHR from '../components/HeaderHR/HeaderHR.jsx';
+import HeaderLogin from '../components/HeaderLogin/HeaderLogin.jsx';
 import LoginPageMain from '../components/LoginPage/LoginPageMain.jsx';
 
 const LoginPage = () => {
     return (
         <>
-            <HeaderHR />
+            <HeaderLogin />
             <LoginPageMain />
         </>
     );
