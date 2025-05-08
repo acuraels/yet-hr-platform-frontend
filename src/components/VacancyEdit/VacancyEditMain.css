@@ -240,3 +240,42 @@
 .status-item:hover {
     opacity: 0.9;
 }
+
+/* Form inputs with yellow border */
+.form-group input[type="text"],
+.form-group input[type="number"] {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #eee600;
+    border-radius: 8px;
+}
+
+/* Select inputs with yellow border */
+.small-inputs input,
+.small-inputs select,
+.select-input {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #eee600;
+    border-radius: 6px;
+}
+
+/* Salary field styling */
+.salary-inputs .salary-field {
+    flex: 1;
+    border: 1px solid #eee600;
+}
+
+/* Modal overlay styling */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}

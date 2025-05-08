@@ -59,9 +59,6 @@ const VacancyCreateMain = () => {
     const toggle = (v, list, setList) =>
         setList(list.includes(v) ? list.filter(i => i !== v) : [...list, v]);
 
-    const mapExperience = () =>
-        experience === "moreThan6" ? "between3and6" : experience;
-
     const buildPayload = () => {
         const work_formats = formats
             .filter(f => f !== "Любой")
@@ -84,7 +81,7 @@ const VacancyCreateMain = () => {
             work_formats,
             work_time: workHours,
             work_schedule: workSchedule,
-            required_experience: mapExperience(),
+            required_experience: experience,
         };
     };
 

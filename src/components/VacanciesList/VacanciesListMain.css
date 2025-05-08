@@ -172,6 +172,10 @@
     gap: 8px;
 }
 
+.filters__options input {
+    cursor: pointer;
+}
+
 .filters__option {
     display: flex;
     align-items: center;
