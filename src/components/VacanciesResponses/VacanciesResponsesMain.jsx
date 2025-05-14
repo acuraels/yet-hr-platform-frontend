@@ -1,264 +1,324 @@
-import { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
+import axiosInstance from "../../utils/axiosInstance"
 import "./VacanciesResponsesMain.css"
 
 const VacanciesResponsesMain = () => {
-    // Состояние для отслеживания активной вкладки
-    const [activeTab, setActiveTab] = useState("not-sorted")
-
-    // Данные о кандидатах (в реальном приложении будут загружаться с сервера)
-    const [candidates, setCandidates] = useState([
-        {
-            id: 1,
-            position: "Продуктовый аналитик",
-            description: "Короткое описание вакансии. Короткое описание вакансии.",
-            tags: ["г.Екатеринбург", "Офис"],
-            experience: "Опыт от 1 года",
-            name: "Шаматов Рафаэль Рафитович",
-            age: 20,
-            email: "shamatovrafa@gmail.com",
-            phone: "+7 (999) 387-05-56",
-            candidateExperience: "Опыт 1.5 года",
-            date: "26.09.2024",
-            time: "19:15",
-            status: "not-sorted",
-            additionalInfo: "",
-        },
-        {
-            id: 2,
-            position: "Продуктовый аналитик",
-            description: "Короткое описание вакансии. Короткое описание вакансии.",
-            tags: ["г.Екатеринбург", "Офис"],
-            experience: "Опыт от 1 года",
-            name: "Иванов Иван Иванович",
-            age: 25,
-            email: "test@test.com",
-            phone: "+7 (999) 999-99-99",
-            candidateExperience: "Опыт 3 месяца",
-            date: "26.09.2024",
-            time: "19:15",
-            status: "rejected",
-            additionalInfo: "",
-        },
-        {
-            id: 3,
-            position: "Продуктовый аналитик",
-            description: "Короткое описание вакансии. Короткое описание вакансии.",
-            tags: ["г.Екатеринбург", "Офис", "Свой кандидат"],
-            experience: "Опыт от 1 года",
-            name: "Машина Маша Машиновна",
-            age: 17,
-            email: "test@test.com",
-            phone: "+7 (999) 999-99-99",
-            candidateExperience: "Без опыта",
-            date: "26.09.2024",
-            time: "19:15",
-            status: "approved",
-            additionalInfo: 'То, что написал кандидат в поле "Чем бы Вы хотели заниматься? На какую роль претендуете?"',
-        },
-        {
-            id: 4,
-            position: "Продуктовый аналитик",
-            description: "Короткое описание вакансии. Короткое описание вакансии.",
-            tags: ["г.Екатеринбург", "Офис"],
-            experience: "Опыт от 1 года",
-            name: "Машина Маша Машиновна",
-            age: 17,
-            email: "test@test.com",
-            phone: "+7 (999) 999-99-99",
-            candidateExperience: "Без опыта",
-            date: "26.09.2024",
-            time: "19:15",
-            status: "meeting-scheduled",
-            additionalInfo: "",
-        },
-        {
-            id: 5,
-            position: "Продуктовый аналитик",
-            description: "Короткое описание вакансии. Короткое описание вакансии.",
-            tags: ["г.Екатеринбург", "Офис"],
-            experience: "Опыт от 1 года",
-            name: "Иванов Иван Иванович",
-            age: 25,
-            email: "test@test.com",
-            phone: "+7 (999) 999-99-99",
-            candidateExperience: "Опыт 3 месяца",
-            date: "26.09.2024",
-            time: "19:15",
-            status: "archived",
-            additionalInfo: "",
-        },
-    ])
-
-    // Фильтрация кандидатов по активной вкладке
-    const filteredCandidates = candidates.filter((candidate) => candidate.status === activeTab)
-
-    // Функция для изменения статуса кандидата
-    const changeStatus = (id, newStatus) => {
-        setCandidates(
-            candidates.map((candidate) => (candidate.id === id ? { ...candidate, status: newStatus } : candidate)),
-        )
+    // конфига для табов
+    const TAB_CONFIG = {
+        "not-sorted": { label: "не разобраны", apiStatus: "NOT_VIEWED", cardClassSuffix: "" },
+        rejected: { label: "отклонены", apiStatus: "REJECTED", cardClassSuffix: "--rejected" },
+        approved: { label: "одобрены", apiStatus: "APPROVED", cardClassSuffix: "--approved" },
+        "meeting-scheduled": { label: "назначена встреча", apiStatus: "INTERVIEW_CONFIRMED", cardClassSuffix: "--meeting" },
+        archived: { label: "архив откликов", apiStatus: "CLOSED", cardClassSuffix: "--archived" },
     }
 
-    // Функция для получения класса карточки в зависимости от статуса
-    const getCardClass = (status) => {
-        switch (status) {
-            case "rejected":
-                return "candidate-card--rejected"
-            case "approved":
-                return "candidate-card--approved"
-            case "meeting-scheduled":
-                return "candidate-card--meeting"
-            case "archived":
-                return "candidate-card--archived"
-            default:
-                return ""
+    // список городов и мапа для форматов
+    const cityOptions = ["Москва", "Екатеринбург", "Сыктывкар"]
+
+    // перевод кодов форматов → русский
+    const workFormatLabels = {
+        ON_SITE: "Офис",
+        REMOTE: "Удалённо",
+        HYBRID: "Гибрид",
+        FIELD_WORK: "Разъездная работа",
+    }
+
+    const workOptions = [
+        { label: workFormatLabels.ON_SITE, code: "ON_SITE" },
+        { label: workFormatLabels.HYBRID, code: "HYBRID" },
+        { label: workFormatLabels.REMOTE, code: "REMOTE" },
+        { label: workFormatLabels.FIELD_WORK, code: "FIELD_WORK" },
+    ]
+
+    const expMap = {
+        noExperience: 0,
+        between1and3: 1,
+        between3and6: 3,
+        moreThan6: 6,
+    }
+
+    const [activeTab, setActiveTab] = useState("not-sorted")
+    const [candidates, setCandidates] = useState([])
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(null)
+
+    // фильтры фронтенд
+    const [cityFilter, setCityFilter] = useState({
+        any: true,
+        Москва: false,
+        Екатеринбург: false,
+        Сыктывкар: false,
+    })
+    const [workFilter, setWorkFilter] = useState({
+        any: true,
+        ON_SITE: false,
+        HYBRID: false,
+        REMOTE: false,
+        FIELD_WORK: false,
+    })
+    const [experienceOnly, setExperienceOnly] = useState(false)
+
+    // загрузка данных при смене таба
+    useEffect(() => {
+        const cfg = TAB_CONFIG[activeTab]
+        if (!cfg) return
+
+        setLoading(true)
+        setError(null)
+
+        axiosInstance
+            .get("/candidate/responses/", { params: { status: cfg.apiStatus } })
+            .then(res => {
+                // приводим статус из API в наш UI‑ключ
+                const uiData = res.data.map(item => {
+                    const uiKey = Object.entries(TAB_CONFIG).find(
+                        ([ui, info]) => info.apiStatus === item.status
+                    )?.[0]
+                    return { ...item, status: uiKey || item.status }
+                })
+                setCandidates(uiData)
+            })
+            .catch(err => {
+                setError(err.response?.statusText || err.message)
+            })
+            .finally(() => setLoading(false))
+    }, [activeTab])
+
+    // хэндлеры фильтров
+    const handleCityChange = e => {
+        const { name, checked } = e.target
+        if (name === "any") {
+            setCityFilter({ any: checked, Москва: false, Екатеринбург: false, Сыктывкар: false })
+        } else {
+            setCityFilter(prev => {
+                const next = { ...prev, [name]: checked }
+                if (checked) next.any = false
+                // если ни один город не выбран — включаем any
+                const anySpec = cityOptions.some(city => next[city])
+                if (!anySpec) next.any = true
+                return next
+            })
         }
+    }
+
+    const handleWorkChange = e => {
+        const { name, checked } = e.target
+        if (name === "any") {
+            setWorkFilter({ any: checked, ON_SITE: false, HYBRID: false, REMOTE: false, FIELD_WORK: false })
+        } else {
+            setWorkFilter(prev => {
+                const next = { ...prev, [name]: checked }
+                if (checked) next.any = false
+                const anySpec = workOptions.some(opt => next[opt.code])
+                if (!anySpec) next.any = true
+                return next
+            })
+        }
+    }
+
+    // основной фильтр на отображение
+    const filtered = candidates
+        .filter(c => c.status === activeTab)
+        .filter(c => {
+            // 1) город
+            const areas = c.vacancy?.areas ?? []
+            if (!cityFilter.any) {
+                const okCity = areas.some(area =>
+                    cityOptions.some(city => cityFilter[city] && area.includes(city))
+                )
+                if (!okCity) return false
+            }
+            // 2) формат работы
+            const fmts = c.vacancy?.work_formats ?? []
+            if (!workFilter.any) {
+                const okFmt = fmts.some(fmt => workFilter[fmt])
+                if (!okFmt) return false
+            }
+            // 3) опыт
+            if (experienceOnly) {
+                const req = c.vacancy?.required_experience
+                const min = expMap[req] ?? 0
+                if (c.experience < min) return false
+            }
+            return true
+        })
+
+    const getCardClass = status => {
+        const suffix = TAB_CONFIG[status]?.cardClassSuffix || ""
+        return `candidate-card${suffix}`
     }
 
     return (
         <main className="vacancies-responses__main">
             <div className="vacancies-responses__main-container">
-                {/* Ссылка на архив */}
+                {/* Архив */}
                 <div className="vacancies-responses__archive-link-container">
                     <button
-                        className={`vacancies-responses__archive-link ${activeTab === "archived" ? "vacancies-responses__archive-link--active" : ""}`}
+                        className={`vacancies-responses__archive-link ${activeTab === "archived"
+                            ? "vacancies-responses__archive-link--active"
+                            : ""
+                            }`}
                         onClick={() => setActiveTab("archived")}
                     >
-                        архив откликов
+                        {TAB_CONFIG.archived.label}
                     </button>
                 </div>
 
-                {/* Вкладки статусов */}
+                {/* Таб‑бар */}
                 <div className="vacancies-responses__tabs">
-                    <button
-                        className={`vacancies-responses__tab ${activeTab === "not-sorted" ? "vacancies-responses__tab--active vacancies-responses__tab--not-sorted-active" : ""}`}
-                        onClick={() => setActiveTab("not-sorted")}
-                    >
-                        не разобраны
-                    </button>
-                    <button
-                        className={`vacancies-responses__tab ${activeTab === "rejected" ? "vacancies-responses__tab--active vacancies-responses__tab--rejected-active" : ""}`}
-                        onClick={() => setActiveTab("rejected")}
-                    >
-                        отклонены
-                    </button>
-                    <button
-                        className={`vacancies-responses__tab ${activeTab === "approved" ? "vacancies-responses__tab--active vacancies-responses__tab--approved-active" : ""}`}
-                        onClick={() => setActiveTab("approved")}
-                    >
-                        одобрены
-                    </button>
-                    <button
-                        className={`vacancies-responses__tab ${activeTab === "meeting-scheduled" ? "vacancies-responses__tab--active vacancies-responses__tab--meeting-active" : ""}`}
-                        onClick={() => setActiveTab("meeting-scheduled")}
-                    >
-                        назначена встреча
-                    </button>
+                    {Object.entries(TAB_CONFIG)
+                        .filter(([key]) => key !== "archived")
+                        .map(([key, info]) => (
+                            <button
+                                key={key}
+                                className={`vacancies-responses__tab ${activeTab === key
+                                    ? `vacancies-responses__tab--active vacancies-responses__tab${info.cardClassSuffix}-active`
+                                    : ""
+                                    }`}
+                                onClick={() => setActiveTab(key)}
+                            >
+                                {info.label}
+                            </button>
+                        ))}
                 </div>
 
-                {/* Основной контент */}
+                {/* Контент */}
                 <div className="vacancies-responses__content">
-                    {/* Список кандидатов */}
+                    {/* Список откликов */}
                     <div className="vacancies-responses__candidates-list">
-                        {filteredCandidates.map((candidate) => (
-                            <Link
-                                key={candidate.id}
-                                to={`/vacancies-responses/${candidate.id}?tab=${activeTab}`}
-                                className="candidate-card-link"
-                            >
-                                <div className={`candidate-card ${getCardClass(candidate.status)}`}>
-                                    <div className="candidate-card__left">
-                                        <div className="candidate-card__tags">
-                                            {candidate.tags.map((tag, index) => (
-                                                <span key={index} className="candidate-card__tag">
-                                                    {tag}
-                                                </span>
-                                            ))}
+                        {loading && <p>Загрузка...</p>}
+                        {error && <p className="error">Ошибка: {error}</p>}
+                        {!loading &&
+                            !error &&
+                            filtered.map(c => (
+                                <Link
+                                    key={c.id}
+                                    to={`/vacancies-responses/${c.id}?tab=${activeTab}`}
+                                    className="candidate-card-link"
+                                >
+                                    <div className={`candidate-card ${getCardClass(c.status)}`}>
+                                        <div className="candidate-card__left">
+                                            <p className="candidate-card__experience hero">{c.vacancy?.title}</p>
+                                            <div className="candidate-card__tags">
+                                                {(c.vacancy?.areas ?? []).map((area, i) => (
+                                                    <span key={`${area}-${i}`} className="candidate-card__tag">
+                                                        {area}
+                                                    </span>
+                                                ))}
+                                                {(c.vacancy?.work_formats ?? []).map((fmt, j) => (
+                                                    <span key={`${fmt}-${j}`} className="candidate-card__tag">
+                                                        {workFormatLabels[fmt] || fmt}
+                                                    </span>
+                                                ))}
+                                            </div>
+
+                                            <p className="candidate-card__experience">{c.name}</p>
+                                            {c.notes && (
+                                                <p className="candidate-card__additional-info">{c.notes}</p>
+                                            )}
                                         </div>
-                                        <h3 className="candidate-card__position">{candidate.position}</h3>
-                                        <p className="candidate-card__description">{candidate.description}</p>
-                                        <p className="candidate-card__experience">{candidate.experience}</p>
-                                        {candidate.additionalInfo && (
-                                            <p className="candidate-card__additional-info">{candidate.additionalInfo}</p>
-                                        )}
-                                    </div>
-                                    <div className="candidate-card__right">
-                                        <div className="candidate-card__response-info">
-                                            <p className="candidate-card__response-label">Отклик в</p>
-                                            <div className="candidate-card__response-datetime">
-                                                <span className="candidate-card__response-time">{candidate.time}</span>
-                                                <span className="candidate-card__response-date">{candidate.date}</span>
+                                        <div className="candidate-card__right">
+                                            <div className="candidate-card__response-info">
+                                                <p className="candidate-card__response-label">Отклик в</p>
+                                                <div className="candidate-card__created">
+                                                    {new Date(c.created_at).toLocaleString("ru-RU", {
+                                                        day: "2-digit",
+                                                        month: "2-digit",
+                                                        year: "numeric",
+                                                        hour: "2-digit",
+                                                        minute: "2-digit",
+                                                    })}
+                                                </div>
+                                                <div className="candidate-card__response-datetime">
+                                                    <span className="candidate-card__response-time">{c.time}</span>
+                                                    <span className="candidate-card__response-date">{c.date}</span>
+                                                </div>
+                                            </div>
+                                            <div className="candidate-card__candidate-info">
+                                                <p className="candidate-card__candidate-name">
+                                                    {c.experience}, {c.age} лет
+                                                </p>
+                                                <p className="candidate-card__candidate-email">{c.email}</p>
+                                                <p className="candidate-card__candidate-phone">{c.phone}</p>
+                                                <p
+                                                    className={`candidate-card__candidate-experience ${c.candidateExperience === "Без опыта"
+                                                        ? "candidate-card__candidate-experience--none"
+                                                        : ""
+                                                        }`}
+                                                >
+                                                    {c.candidateExperience}
+                                                </p>
                                             </div>
                                         </div>
-                                        <div className="candidate-card__candidate-info">
-                                            <p className="candidate-card__candidate-name">
-                                                {candidate.name}, {candidate.age} лет
-                                            </p>
-                                            <p className="candidate-card__candidate-email">{candidate.email}</p>
-                                            <p className="candidate-card__candidate-phone">{candidate.phone}</p>
-                                            <p
-                                                className={`candidate-card__candidate-experience ${candidate.candidateExperience === "Без опыта" ? "candidate-card__candidate-experience--none" : ""}`}
-                                            >
-                                                {candidate.candidateExperience}
-                                            </p>
-                                        </div>
                                     </div>
-                                </div>
-                            </Link>
-                        ))}
+                                </Link>
+                            ))}
                     </div>
 
                     {/* Фильтры */}
                     <div className="vacancies-responses__filters">
                         <h3 className="vacancies-responses__filters-title">Фильтры</h3>
 
+                        {/* По городу */}
                         <div className="vacancies-responses__filter-group">
                             <h4 className="vacancies-responses__filter-group-title">Местоположение</h4>
                             <div className="vacancies-responses__filter-options">
                                 <label className="vacancies-responses__filter-option">
-                                    <input type="checkbox" defaultChecked />
+                                    <input
+                                        type="checkbox"
+                                        name="any"
+                                        checked={cityFilter.any}
+                                        onChange={handleCityChange}
+                                    />
                                     <span>Любой город</span>
                                 </label>
-                                <label className="vacancies-responses__filter-option">
-                                    <input type="checkbox" />
-                                    <span>Москва</span>
-                                </label>
-                                <label className="vacancies-responses__filter-option">
-                                    <input type="checkbox" />
-                                    <span>Екатеринбург</span>
-                                </label>
-                                <label className="vacancies-responses__filter-option">
-                                    <input type="checkbox" />
-                                    <span>Сыктывкар</span>
-                                </label>
+                                {cityOptions.map(city => (
+                                    <label key={city} className="vacancies-responses__filter-option">
+                                        <input
+                                            type="checkbox"
+                                            name={city}
+                                            checked={cityFilter[city]}
+                                            onChange={handleCityChange}
+                                        />
+                                        <span>{city}</span>
+                                    </label>
+                                ))}
                             </div>
                         </div>
 
+                        {/* По формату работы */}
                         <div className="vacancies-responses__filter-group">
                             <h4 className="vacancies-responses__filter-group-title">Формат работы</h4>
                             <div className="vacancies-responses__filter-options">
                                 <label className="vacancies-responses__filter-option">
-                                    <input type="checkbox" defaultChecked />
+                                    <input
+                                        type="checkbox"
+                                        name="any"
+                                        checked={workFilter.any}
+                                        onChange={handleWorkChange}
+                                    />
                                     <span>Любой</span>
                                 </label>
-                                <label className="vacancies-responses__filter-option">
-                                    <input type="checkbox" />
-                                    <span>Офис</span>
-                                </label>
-                                <label className="vacancies-responses__filter-option">
-                                    <input type="checkbox" />
-                                    <span>Гибрид</span>
-                                </label>
-                                <label className="vacancies-responses__filter-option">
-                                    <input type="checkbox" />
-                                    <span>Удаленка</span>
-                                </label>
+                                {workOptions.map(opt => (
+                                    <label key={opt.code} className="vacancies-responses__filter-option">
+                                        <input
+                                            type="checkbox"
+                                            name={opt.code}
+                                            checked={workFilter[opt.code]}
+                                            onChange={handleWorkChange}
+                                        />
+                                        <span>{opt.label}</span>
+                                    </label>
+                                ))}
                             </div>
                         </div>
 
+                        {/* По опыту */}
                         <div className="vacancies-responses__filter-group">
-                            <h4 className="vacancies-responses__filter-group-title">Соответствие опыту</h4>
+                            <h4 className="vacancies-responses__filter-group-title">
+                                Соответствие опыту
+                            </h4>
                             <div className="vacancies-responses__filter-toggle">
                                 <label className="toggle">
                                     <input type="checkbox" />
@@ -273,4 +333,4 @@ const VacanciesResponsesMain = () => {
     )
 }
 
-export default VacanciesResponsesMain
+export default VacanciesResponsesMain;

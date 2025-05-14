@@ -264,6 +264,13 @@
     font-size: 14px;
     color: #666;
     margin-bottom: 8px;
+    margin-bottom: 20px;
+}
+
+.hero {
+    font-weight: 700;
+    font-size: 30px;
+    color: #000;
 }
 
 .candidate-card__additional-info {

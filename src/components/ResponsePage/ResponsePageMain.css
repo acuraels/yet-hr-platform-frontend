@@ -263,7 +263,7 @@
 }
 
 .response-page__status-option:hover {
-    background-color: #f5f5f5;
+    background-color: #eee600;
 }
 
 /* Status colors */
@@ -275,7 +275,7 @@
 
 .response-page__status-option--rejected,
 .response-page__status-button.response-page__status-option--rejected {
-    background-color: #8b0000;
+    background-color: #ec1010;
     color: white;
 }
 
@@ -287,7 +287,7 @@
 
 .response-page__status-option--meeting,
 .response-page__status-button.response-page__status-option--meeting {
-    background-color: #1b5e20;
+    background-color: #09ae14;
     color: white;
 }
 

@@ -1,92 +1,142 @@
-import { useState } from "react"
-import { Link, useParams } from "react-router-dom"
-import "./VacancieLookPageMain.css"
+import { useState, useEffect, useCallback } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import axiosInstance from "../../utils/axiosInstance";
+import './VacancieLookPageMain.css';
 
 const VacancieLookPageMain = () => {
-    const { id } = useParams()
-    const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
-    const [applyStep, setApplyStep] = useState(1)
-    const [fileUploaded, setFileUploaded] = useState(false)
+    const { id } = useParams();
 
-    // Form data state
-    const [applyFormData, setApplyFormData] = useState({
-        fullName: '',
-        birthDate: '',
+    /* ================= vacancy ================= */
+    const [currentVacancy, setCurrentVacancy] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const controller = new AbortController();
+
+        (async () => {
+            try {
+                setLoading(true);
+                const { data } = await axiosInstance.get(
+                    `manager/vacancies/${id}/`,
+                    { signal: controller.signal },
+                );
+                setCurrentVacancy(data);
+                setError(null);
+            } catch (err) {
+                if (axiosInstance.isCancel?.(err)) return;
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        })();
+
+        return () => controller.abort();
+    }, [id]);
+
+    /* ================= modal ================= */
+    const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+    const [applyStep, setApplyStep] = useState(1);
+    const [fileUploaded, setFileUploaded] = useState(false);
+    const [resumeFile, setResumeFile] = useState(null);
+
+    const [applyForm, setApplyForm] = useState({
+        name: '',
+        birth_date: '',
         phone: '',
         email: '',
         experience: '',
-        resumeLink: '',
-        additionalInfo: ''
-    })
+        resume_url: '',
+        notes: '',
+    });
 
-    // Mock data for the vacancy (in a real app, you would fetch this based on the id)
-    const vacancy = {
-        id: id,
-        title: "Название вакансии",
-        date: "26 апреля 2025",
-        description: "Описание вакансии Описание вакансии Описание вакансии Описание вакансии Описание вакансии Описание вакансии Описание вакансии.",
-        location: "Екатеринбург",
-        format: "Офис",
-        schedule: "5/2",
-        hours: "8 часов/день",
-        salary: "87 000",
-        sections: [
-            {
-                title: "Подзаголовок",
-                content: "В далёком лесу, где ветер играет с листьями деревьев, а облака плывут по небу как пушистые кораблики, жил-был маленький оранжевый гриб. Этот гриб был необычным: он умел петь песни на языке, который никто не понимал, но все равно любили слушать. Его голос звучал так мягко и приятно, что даже птицы переставали щебетать, чтобы насладиться этим чудесным звуком."
-            },
-            {
-                title: "Подзаголовок",
-                content: "В далёком лесу, где ветер играет с листьями деревьев, а облака плывут по небу как пушистые кораблики, жил-был маленький оранжевый гриб. Этот гриб был необычным: он умел петь песни на языке, который никто не понимал, но все равно любили слушать. Его голос звучал так мягко и приятно, что даже птицы переставали щебетать, чтобы насладиться этим чудесным звуком."
-            },
-            {
-                title: "Подзаголовок",
-                content: "В далёком лесу, где ветер играет с листьями деревьев, а облака плывут по небу как пушистые кораблики, жил-был маленький оранжевый гриб. Этот гриб был необычным: он умел петь песни на языке, который никто не понимал, но все равно любили слушать. Его голос звучал так мягко и приятно, что даже птицы переставали щебетать, чтобы насладиться этим чудесным звуком."
-            }
-        ]
-    }
+    /* ---------- helpers ---------- */
+    const formatSalary = (from, to) => {
+        if (from && to) return `${Math.round((from + to) / 2).toLocaleString('ru-RU')} ₽`;
+        if (from) return `от ${from.toLocaleString('ru-RU')} ₽`;
+        if (to) return `до ${to.toLocaleString('ru-RU')} ₽`;
+        return 'не указана';
+    };
 
-    // Handle form input changes
-    const handleApplyFormChange = (e) => {
-        const { name, value } = e.target
-        setApplyFormData(prev => ({ ...prev, [name]: value }))
-    }
+    /* ---------- handlers ---------- */
+    const onApplyChange = (e) => {
+        const { name, value } = e.target;
+        setApplyForm((prev) => ({ ...prev, [name]: value }));
+    };
 
-    // Handle form submission
-    const handleApplySubmit = (e) => {
-        e.preventDefault()
-        setApplyStep(3) // Skip to success step
-        // Here you would typically send the data to a server
-    }
+    const handleFileUpload = (e) => {
+        if (e.target.files?.length) {
+            setResumeFile(e.target.files[0]);
+            setFileUploaded(true);
+        }
+    };
 
-    // Handle file upload
-    const handleFileUpload = () => {
-        setFileUploaded(true)
-    }
-
-    // Open and close modal functions
     const openApplyModal = () => {
-        setApplyStep(1)
-        setIsApplyModalOpen(true)
-        setFileUploaded(false)
-    }
+        setApplyStep(1);
+        setIsApplyModalOpen(true);
+        setFileUploaded(false);
+        setResumeFile(null);
+    };
 
     const closeApplyModal = () => {
-        setIsApplyModalOpen(false)
-        setApplyFormData({
-            fullName: '',
-            birthDate: '',
+        setIsApplyModalOpen(false);
+        setApplyForm({
+            name: '',
+            birth_date: '',
             phone: '',
             email: '',
             experience: '',
-            resumeLink: '',
-            additionalInfo: ''
-        })
-    }
+            resume_url: '',
+            notes: '',
+        });
+    };
+
+    const handleApplySubmit = useCallback(
+        async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData();
+            Object.entries(applyForm).forEach(([k, v]) => formData.append(k, v));
+            if (resumeFile) formData.append('resume_file', resumeFile);
+            // Прокидываем id вакансии
+            formData.append('vacancy_id', id);
+
+            try {
+                await axiosInstance.post(
+                    `candidate/response/create/`,
+                    formData,
+                    { headers: { 'Content-Type': 'multipart/form-data' } },
+                );
+                setApplyStep(3);
+            } catch (err) {
+                alert(err.response?.data?.detail || err.message);
+            }
+        },
+        [applyForm, resumeFile, id],
+    );
+
+    /* ================= render ================= */
+    if (loading) return <p className="vacancy-look-page__loading">Загружаем…</p>;
+    if (error) return <p className="vacancy-look-page__error">{error}</p>;
+    if (!currentVacancy) return null;
+
+    const {
+        title,
+        description,
+        published_at,
+        address_raw,
+        work_formats,
+        work_schedule,
+        work_time,
+        required_experience,
+        salary_from,
+        salary_to,
+    } = currentVacancy;
 
     return (
         <main className="vacancy-look-page__main">
             <div className="vacancy-look-page__container">
+                {/* ---------- header ---------- */}
                 <header className="vacancy-look-page__header">
                     <h1 className="vacancy-look-page__title">Вакансия</h1>
                     <Link to="/vacancies" className="vacancy-look-page__back-link">
@@ -94,20 +144,42 @@ const VacancieLookPageMain = () => {
                     </Link>
                 </header>
 
+                {/* ---------- vacancy ---------- */}
                 <article className="vacancy-look-page__article">
                     <div className="vacancy-look-page__meta">
-                        <time className="vacancy-look-page__date">{vacancy.date}</time>
+                        <time className="vacancy-look-page__date">
+                            {new Date(published_at).toLocaleDateString('ru-RU', {
+                                day: '2-digit',
+                                month: 'long',
+                                year: 'numeric',
+                            })}
+                        </time>
                     </div>
 
-                    <h2 className="vacancy-look-page__vacancy-title">{vacancy.title}</h2>
+                    <h2 className="vacancy-look-page__vacancy-title">{title}</h2>
 
                     <div className="vacancy-look-page__details">
-                        <p className="vacancy-look-page__salary">В среднем {vacancy.salary} ₽</p>
+                        <p className="vacancy-look-page__salary">
+                            В среднем {formatSalary(salary_from, salary_to)}
+                        </p>
                         <ul className="vacancy-look-page__info-list">
-                            <li className="vacancy-look-page__info-item">— Место: г. {vacancy.location}</li>
-                            <li className="vacancy-look-page__info-item">— Формат: {vacancy.format}</li>
-                            <li className="vacancy-look-page__info-item">— Расписание: {vacancy.schedule}</li>
-                            <li className="vacancy-look-page__info-item">— Время: {vacancy.hours}</li>
+                            <li className="vacancy-look-page__info-item">— Место: {address_raw}</li>
+                            {work_formats?.length > 0 && (
+                                <li className="vacancy-look-page__info-item">
+                                    — Формат: {work_formats.join(', ')}
+                                </li>
+                            )}
+                            {work_schedule && (
+                                <li className="vacancy-look-page__info-item">— Расписание: {work_schedule}</li>
+                            )}
+                            {work_time && (
+                                <li className="vacancy-look-page__info-item">— Время: {work_time}</li>
+                            )}
+                            {required_experience && (
+                                <li className="vacancy-look-page__info-item">
+                                    — Опыт: {required_experience}
+                                </li>
+                            )}
                         </ul>
 
                         <button
@@ -119,17 +191,11 @@ const VacancieLookPageMain = () => {
                     </div>
 
                     <div className="vacancy-look-page__content">
-                        <p className="vacancy-look-page__description">{vacancy.description}</p>
-
-                        {vacancy.sections.map((section, index) => (
-                            <section key={index} className="vacancy-look-page__section">
-                                <h3 className="vacancy-look-page__section-title">{section.title}</h3>
-                                <p className="vacancy-look-page__section-content">{section.content}</p>
-                            </section>
-                        ))}
+                        <p className="vacancy-look-page__description">{description}</p>
                     </div>
                 </article>
 
+                {/* ---------- footer ---------- */}
                 <div className="vacancy-look-page__footer">
                     <Link to="/vacancies" className="vacancy-look-page__back-link">
                         <span className="vacancy-look-page__back-arrow">←</span> К вакансиям
@@ -137,34 +203,39 @@ const VacancieLookPageMain = () => {
                 </div>
             </div>
 
-            {/* Модальное окно для отклика на вакансию */}
+            {/* ================= modal ================= */}
             {isApplyModalOpen && (
                 <div className="modal">
-                    <div className="modal__overlay" onClick={closeApplyModal}></div>
+                    <div className="modal__overlay" onClick={closeApplyModal} />
                     <div className="modal__content">
+                        {/* ---------- step 1 ---------- */}
                         {applyStep === 1 && (
                             <div className="modal__step">
                                 <h2 className="modal__title">Откликнуться на вакансию</h2>
-                                <p className="modal__vacancy-title">{vacancy.title}</p>
-                                <form onSubmit={(e) => { e.preventDefault(); setApplyStep(2); }}>
+                                <p className="modal__vacancy-title">{currentVacancy.title}</p>
+                                <form
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        setApplyStep(2);
+                                    }}
+                                >
                                     <div className="modal__form-container">
                                         <h3 className="modal__form-title">Заполните информацию</h3>
                                         <div className="modal__form-fields">
                                             <input
                                                 type="text"
-                                                name="fullName"
-                                                value={applyFormData.fullName}
-                                                onChange={handleApplyFormChange}
+                                                name="name"
+                                                value={applyForm.name}
+                                                onChange={onApplyChange}
                                                 placeholder="Фамилия, имя и отчество"
                                                 className="modal__input"
                                                 required
                                             />
                                             <input
                                                 type="date"
-                                                name="birthDate"
-                                                value={applyFormData.birthDate}
-                                                onChange={handleApplyFormChange}
-                                                placeholder="Дата рождения"
+                                                name="birth_date"
+                                                value={applyForm.birth_date}
+                                                onChange={onApplyChange}
                                                 className="modal__input"
                                                 required
                                             />
@@ -172,8 +243,8 @@ const VacancieLookPageMain = () => {
                                                 <input
                                                     type="tel"
                                                     name="phone"
-                                                    value={applyFormData.phone}
-                                                    onChange={handleApplyFormChange}
+                                                    value={applyForm.phone}
+                                                    onChange={onApplyChange}
                                                     placeholder="Номер телефона"
                                                     className="modal__input"
                                                     required
@@ -181,23 +252,26 @@ const VacancieLookPageMain = () => {
                                                 <input
                                                     type="email"
                                                     name="email"
-                                                    value={applyFormData.email}
-                                                    onChange={handleApplyFormChange}
+                                                    value={applyForm.email}
+                                                    onChange={onApplyChange}
                                                     placeholder="Электронная почта"
                                                     className="modal__input"
                                                     required
                                                 />
                                             </div>
                                         </div>
-                                        <button type="submit" className="modal__button">Далее</button>
+                                        <button type="submit" className="modal__button">
+                                            Далее
+                                        </button>
                                     </div>
                                 </form>
                             </div>
                         )}
 
+                        {/* ---------- step 2 ---------- */}
                         {applyStep === 2 && (
                             <div className="modal__step">
-                                <h2 className="modal__title">Заявка - шаг 2</h2>
+                                <h2 className="modal__title">Заявка — шаг 2</h2>
                                 <form onSubmit={handleApplySubmit}>
                                     <div className="modal__form-container">
                                         <h3 className="modal__form-title">Заполните информацию</h3>
@@ -205,40 +279,47 @@ const VacancieLookPageMain = () => {
                                             <input
                                                 type="text"
                                                 name="experience"
-                                                value={applyFormData.experience}
-                                                onChange={handleApplyFormChange}
-                                                placeholder="Сколько опыта на этой или подобной вакансии"
+                                                value={applyForm.experience}
+                                                onChange={onApplyChange}
+                                                placeholder="Опыт (лет)"
                                                 className="modal__input"
                                                 required
                                             />
                                             <div className="modal__upload-container">
                                                 <div className="modal__upload-options">
-                                                    <label className={`modal__upload-button ${fileUploaded ? 'modal__upload-button--uploaded' : ''}`}>
+                                                    <label
+                                                        className={`modal__upload-button ${fileUploaded
+                                                            ? 'modal__upload-button--uploaded'
+                                                            : ''
+                                                            }`}
+                                                    >
                                                         <input
                                                             type="file"
                                                             onChange={handleFileUpload}
                                                             style={{ display: 'none' }}
                                                         />
                                                         <span>Загрузить резюме</span>
-                                                        {fileUploaded && <span className="modal__upload-icon">✓</span>}
+                                                        {fileUploaded && (
+                                                            <span className="modal__upload-icon">✓</span>
+                                                        )}
                                                     </label>
                                                     <span className="modal__upload-or">или</span>
                                                     <input
                                                         type="url"
                                                         name="resumeLink"
-                                                        value={applyFormData.resumeLink}
-                                                        onChange={handleApplyFormChange}
+                                                        value={applyForm.resume_url}
+                                                        onChange={onApplyChange}
                                                         placeholder="Ссылка на резюме"
                                                         className="modal__input modal__input--link"
                                                     />
                                                 </div>
                                                 <textarea
-                                                    name="additionalInfo"
-                                                    value={applyFormData.additionalInfo}
-                                                    onChange={handleApplyFormChange}
-                                                    placeholder="Можете уточнить информацию о себе или, например, рассказать, почему вас заинтересовала вакансия"
+                                                    name="notes"
+                                                    value={applyForm.notes}
+                                                    onChange={onApplyChange}
+                                                    placeholder="Дополнительная информация"
                                                     className="modal__textarea"
-                                                ></textarea>
+                                                />
                                             </div>
                                         </div>
                                         <div className="modal__buttons">
@@ -249,17 +330,25 @@ const VacancieLookPageMain = () => {
                                             >
                                                 Назад
                                             </button>
-                                            <button type="submit" className="modal__button modal__button--submit">Отправить</button>
+                                            <button
+                                                type="submit"
+                                                className="modal__button modal__button--submit"
+                                            >
+                                                Отправить
+                                            </button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
                         )}
 
+                        {/* ---------- success ---------- */}
                         {applyStep === 3 && (
                             <div className="modal__step modal__step--success">
                                 <h2 className="modal__title">Заявка отправлена</h2>
-                                <p className="modal__success-message">Скоро вас рассмотрит наш нанимающий менеджер</p>
+                                <p className="modal__success-message">
+                                    Скоро с вами свяжется менеджер
+                                </p>
                                 <button
                                     className="modal__button modal__button--close"
                                     onClick={closeApplyModal}
@@ -272,7 +361,7 @@ const VacancieLookPageMain = () => {
                 </div>
             )}
         </main>
-    )
-}
+    );
+};
 
 export default VacancieLookPageMain;

@@ -147,14 +147,13 @@ const VacanciesPageMain = () => {
         fd.append("email", form.email);
         fd.append("experience", form.experience);
         fd.append("letter", form.additionalInfo);
-
-        if (vacancyId) fd.append("vacancy", vacancyId);
+        if (vacancyId) fd.append("vacancy_id", vacancyId);
         if (resumeFile) fd.append("resume_file", resumeFile);
         else if (form.resumeLink) fd.append("resume_url", form.resumeLink);
         if (form.desiredRole) fd.append("desired_role", form.desiredRole);
 
         return axiosInstance.post(
-            "candidate/response/",
+            "candidate/response/create/",
             fd,
             { headers: { "Content-Type": "multipart/form-data" } }
         );
