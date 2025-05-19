@@ -154,7 +154,11 @@ const VacanciesListMain = () => {
                             <Link to="/vacancy-create" className="hr-vacancies-header__create-btn">
                                 Создать
                             </Link>
+
                         )}
+                        <Link to="/hh" className="hr-vacancies-header__create-btn hh">
+                            Синхронизировать вакансии с HH.RU
+                        </Link>
                         <div className="hr-vacancies-header__bottom-row">
                             <button className="hr-vacancies-header__archive-btn" onClick={toggleArchive}>
                                 {isArchive ? "вернуться к вакансиям" : "архив вакансий"}

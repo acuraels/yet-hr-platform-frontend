@@ -6,6 +6,15 @@
     width: 90%;
 }
 
+.hh {
+    background-color: #ff4d3a !important;
+    color: #fff !important;
+}
+
+.hh:hover {
+    background-color: #820e01 !important;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;

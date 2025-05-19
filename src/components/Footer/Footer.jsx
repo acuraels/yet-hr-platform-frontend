@@ -1,16 +1,19 @@
-import { useState } from "react"
-import { Link } from "react-router-dom"
-import logo from "../../assets/logo.svg"
-import "./Footer.css"
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import axiosInstance from "../../utils/axiosInstance";
+import logo from "../../assets/logo.svg";
+import "./Footer.css";
 
 const Footer = () => {
-    // Состояния для модального окна
-    const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false)
-    const [suggestStep, setSuggestStep] = useState(1)
-    const [fileUploaded, setFileUploaded] = useState(false)
+    /* ───────── состояния ───────── */
+    const [isSuggestModalOpen, setIsSuggestModalOpen] = useState(false);
+    const [suggestStep, setSuggestStep] = useState(1);
 
-    // Данные формы
-    const [suggestFormData, setSuggestFormData] = useState({
+    const [resumeFile, setResumeFile] = useState(null);
+    const [fileUploaded, setFileUploaded] = useState(false);
+
+    /* ───────── форма ───────── */
+    const blankSuggest = {
         fullName: "",
         birthDate: "",
         phone: "",
@@ -19,84 +22,129 @@ const Footer = () => {
         experience: "",
         resumeLink: "",
         additionalInfo: "",
-    })
+    };
+    const [suggestForm, setSuggestForm] = useState(blankSuggest);
 
-    // Функции для модального окна
+    /* ───────── helpers ───────── */
+    const onSuggestChange = ({ target: { name, value } }) =>
+        setSuggestForm((prev) => ({ ...prev, [name]: value }));
+
+    const handleFileUpload = (e) => {
+        const file = e.target.files?.[0] || null;
+        setResumeFile(file);
+        setFileUploaded(!!file);
+    };
+
+    const sendResponse = async (form) => {
+        const fd = new FormData();
+        fd.append("name", form.fullName);
+        fd.append("birth_date", form.birthDate);
+        fd.append("phone", form.phone);
+        fd.append("email", form.email);
+        fd.append("experience", form.experience);
+        fd.append("letter", form.additionalInfo);
+
+        if (resumeFile) fd.append("resume_file", resumeFile);
+        else if (form.resumeLink) fd.append("resume_url", form.resumeLink);
+
+        if (form.desiredRole) fd.append("desired_role", form.desiredRole);
+
+        return axiosInstance.post(
+            "candidate/response/create/",
+            fd,
+            { headers: { "Content-Type": "multipart/form-data" } }
+        );
+    };
+
+    const handleSuggestSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await sendResponse(suggestForm);
+            setSuggestStep(4);              // успех
+        } catch (err) {
+            console.error(err);
+            alert("Не удалось отправить заявку");
+        }
+    };
+
+    /* ───────── open / close ───────── */
     const openSuggestModal = () => {
-        setSuggestStep(1)
-        setIsSuggestModalOpen(true)
-        setFileUploaded(false)
-    }
+        setSuggestStep(1);
+        setIsSuggestModalOpen(true);
+        setResumeFile(null);
+        setFileUploaded(false);
+    };
 
     const closeSuggestModal = () => {
-        setIsSuggestModalOpen(false)
-        setSuggestFormData({
-            fullName: "",
-            birthDate: "",
-            phone: "",
-            email: "",
-            desiredRole: "",
-            experience: "",
-            resumeLink: "",
-            additionalInfo: "",
-        })
-    }
+        setIsSuggestModalOpen(false);
+        setSuggestForm(blankSuggest);
+        setResumeFile(null);
+        setFileUploaded(false);
+    };
 
-    // Обработчик изменения полей формы
-    const handleSuggestFormChange = (e) => {
-        const { name, value } = e.target
-        setSuggestFormData((prev) => ({ ...prev, [name]: value }))
-    }
-
-    // Обработчик отправки формы
-    const handleSuggestSubmit = (e) => {
-        e.preventDefault()
-        setSuggestStep(4) // Переход к шагу "Заявка отправлена"
-        // Здесь можно добавить логику отправки данных на сервер
-    }
-
-    // Обработчик загрузки файла
-    const handleFileUpload = () => {
-        setFileUploaded(true)
-    }
-
+    /* ───────── JSX ───────── */
     return (
         <footer className="footer">
             <div className="footer__container">
+                {/* ── верхняя строка ── */}
                 <div className="footer__top">
                     <Link to="/home" className="header__logo">
                         <div className="footer__logo-container">
-                            <img src={logo || "/placeholder.svg"} alt="Логотип компании" className="logo" />
+                            <img
+                                src={logo || "/placeholder.svg"}
+                                alt="Логотип компании"
+                                className="logo"
+                            />
                             <p className="logo__text">
-                                <span className="logo__span"> ТОРГОВЫЙ ДОМ УЭТ</span>
+                                <span className="logo__span">ТОРГОВЫЙ ДОМ УЭТ</span>
                             </p>
                         </div>
                     </Link>
-                    <button className="footer__vacancy-link" onClick={openSuggestModal}>
+
+                    <button
+                        className="footer__vacancy-link"
+                        onClick={openSuggestModal}
+                    >
                         Не нашли вакансию?
                     </button>
                 </div>
 
+                {/* ── контент футера ── */}
                 <div className="footer__content">
+                    {/* Главный офис */}
                     <div className="footer__column">
                         <h3 className="footer__heading">Главный офис</h3>
                         <p className="footer__text">
-                            г. Екатеринбург, <br /> ул. Малышева, 164, оф. 406
+                            г.&nbsp;Екатеринбург, <br />
+                            ул.&nbsp;Малышева,&nbsp;164,&nbsp;оф.&nbsp;406
                         </p>
                     </div>
 
+                    {/* Телефон */}
                     <div className="footer__column">
                         <h3 className="footer__heading">Телефон</h3>
-                        <a href="tel:+79999999999" className="footer__text footer__phone">
-                            +7 (999) 999-99-99
+                        <a
+                            href="tel:+79999999999"
+                            className="footer__text footer__phone"
+                        >
+                            +7&nbsp;(999)&nbsp;999-99-99
                         </a>
-                        <p className="footer__text footer__text-small">Звоните с 9:00 до 18:00</p>
+                        <p className="footer__text footer__text-small">
+                            Звоните с&nbsp;9:00&nbsp;до&nbsp;18:00
+                        </p>
                     </div>
 
+                    {/* Мы на связи (иконки) */}
                     <div className="footer__column">
-                        <h3 className="footer__heading footer__heading-contact">Мы на связи</h3>
+                        <h3 className="footer__heading footer__heading-contact">
+                            Мы на связи
+                        </h3>
                         <div className="footer__contact-icons">
-                            <a href="https://wa.me/79999999999" className="footer__icon-link" aria-label="WhatsApp">
+                            <a
+                                href="https://wa.me/79999999999"
+                                className="footer__icon-link"
+                                aria-label="WhatsApp"
+                            >
                                 <svg
                                     className="footer__icon"
                                     width="24"
@@ -111,7 +159,12 @@ const Footer = () => {
                                     />
                                 </svg>
                             </a>
-                            <a href="mailto:uet.hiring@test.com" className="footer__icon-link" aria-label="Email">
+
+                            <a
+                                href="mailto:uet.hiring@test.com"
+                                className="footer__icon-link"
+                                aria-label="Email"
+                            >
                                 <svg
                                     className="footer__icon"
                                     width="24"
@@ -126,7 +179,12 @@ const Footer = () => {
                                     />
                                 </svg>
                             </a>
-                            <a href="tel:+79999999999" className="footer__icon-link" aria-label="Телефон">
+
+                            <a
+                                href="tel:+79999999999"
+                                className="footer__icon-link"
+                                aria-label="Телефон"
+                            >
                                 <svg
                                     className="footer__icon"
                                     width="24"
@@ -144,18 +202,25 @@ const Footer = () => {
                         </div>
                     </div>
 
+                    {/* Почта */}
                     <div className="footer__column">
-                        <h3 className="footer__heading footer__heading-email">Почта</h3>
-                        <a href="mailto:uet.hiring@test.com" className="footer__email">
+                        <h3 className="footer__heading footer__heading-email">
+                            Почта
+                        </h3>
+                        <a
+                            href="mailto:uet.hiring@test.com"
+                            className="footer__email"
+                        >
                             uet.hiring@test.com
                         </a>
                     </div>
 
+                    {/* Навигация */}
                     <div className="footer__column">
                         <h3 className="footer__heading">Навигация</h3>
                         <nav className="footer__nav">
                             <Link to="/home" className="footer__nav-link">
-                                О нас
+                                О&nbsp;нас
                             </Link>
                             <Link to="/vacancies" className="footer__nav-link">
                                 Вакансии
@@ -169,14 +234,15 @@ const Footer = () => {
                         </nav>
                     </div>
 
+                    {/* Также мы */}
                     <div className="footer__column">
                         <h3 className="footer__heading">Также мы</h3>
                         <nav className="footer__nav">
                             <Link to="/here" className="footer__nav-link">
-                                вот тут
+                                вот&nbsp;тут
                             </Link>
                             <Link to="/more" className="footer__nav-link">
-                                еще тут
+                                ещё&nbsp;тут
                             </Link>
                             <Link to="/there" className="footer__nav-link">
                                 тама
@@ -189,63 +255,81 @@ const Footer = () => {
                 </div>
             </div>
 
-            {/* Модальное окно для предложения кандидатуры */}
+            {/* ───────── модалка «Предложить кандидатуру» ───────── */}
             {isSuggestModalOpen && (
                 <div className="modal">
-                    <div className="modal__overlay" onClick={closeSuggestModal}></div>
+                    <div
+                        className="modal__overlay"
+                        onClick={closeSuggestModal}
+                    />
                     <div className="modal__content">
+                        {/* ШАГ 1 */}
                         {suggestStep === 1 && (
                             <div className="modal__step">
-                                <h2 className="modal__title">Предложить кандидатуру</h2>
+                                <h2 className="modal__title">
+                                    Предложить кандидатуру
+                                </h2>
+
                                 <form
                                     onSubmit={(e) => {
-                                        e.preventDefault()
-                                        setSuggestStep(2)
+                                        e.preventDefault();
+                                        setSuggestStep(2);
                                     }}
                                 >
                                     <div className="modal__form-container">
-                                        <h3 className="modal__form-title">Заполните информацию</h3>
+                                        <h3 className="modal__form-title">
+                                            Заполните информацию
+                                        </h3>
+
                                         <div className="modal__form-fields">
                                             <input
                                                 type="text"
                                                 name="fullName"
-                                                value={suggestFormData.fullName}
-                                                onChange={handleSuggestFormChange}
+                                                value={suggestForm.fullName}
+                                                onChange={onSuggestChange}
                                                 placeholder="Фамилия, имя и отчество"
                                                 className="modal__input"
                                                 required
+                                                maxLength="100"
                                             />
+
                                             <input
                                                 type="date"
                                                 name="birthDate"
-                                                value={suggestFormData.birthDate}
-                                                onChange={handleSuggestFormChange}
-                                                placeholder="Дата рождения"
+                                                value={suggestForm.birthDate}
+                                                onChange={onSuggestChange}
                                                 className="modal__input"
                                                 required
                                             />
+
                                             <div className="modal__input-row">
                                                 <input
                                                     type="tel"
                                                     name="phone"
-                                                    value={suggestFormData.phone}
-                                                    onChange={handleSuggestFormChange}
+                                                    value={suggestForm.phone}
+                                                    onChange={onSuggestChange}
                                                     placeholder="Номер телефона"
                                                     className="modal__input"
                                                     required
+                                                    maxLength="20"
                                                 />
                                                 <input
                                                     type="email"
                                                     name="email"
-                                                    value={suggestFormData.email}
-                                                    onChange={handleSuggestFormChange}
+                                                    value={suggestForm.email}
+                                                    onChange={onSuggestChange}
                                                     placeholder="Электронная почта"
                                                     className="modal__input"
                                                     required
+                                                    maxLength="50"
                                                 />
                                             </div>
                                         </div>
-                                        <button type="submit" className="modal__button">
+
+                                        <button
+                                            type="submit"
+                                            className="modal__button"
+                                        >
                                             Далее
                                         </button>
                                     </div>
@@ -253,68 +337,113 @@ const Footer = () => {
                             </div>
                         )}
 
+                        {/* ШАГ 2 */}
                         {suggestStep === 2 && (
                             <div className="modal__step">
-                                <h2 className="modal__title">Заявка - шаг 2</h2>
+                                <h2 className="modal__title">Заявка — шаг 2</h2>
+
                                 <form onSubmit={handleSuggestSubmit}>
                                     <div className="modal__form-container">
-                                        <h3 className="modal__form-title">Заполните информацию</h3>
+                                        <h3 className="modal__form-title">
+                                            Заполните информацию
+                                        </h3>
+
                                         <div className="modal__form-fields">
                                             <input
                                                 type="text"
                                                 name="desiredRole"
-                                                value={suggestFormData.desiredRole}
-                                                onChange={handleSuggestFormChange}
-                                                placeholder="Чем бы Вы хотели заниматься? На какую роль претендуете?"
+                                                value={suggestForm.desiredRole}
+                                                onChange={onSuggestChange}
+                                                placeholder="Желаемая роль"
                                                 className="modal__input"
                                                 required
+                                                maxLength="100"
                                             />
+
                                             <input
                                                 type="text"
                                                 name="experience"
-                                                value={suggestFormData.experience}
-                                                onChange={handleSuggestFormChange}
-                                                placeholder="Сколько опыта на этой или подобной роли"
+                                                value={suggestForm.experience}
+                                                onChange={onSuggestChange}
+                                                placeholder="Опыт (лет)"
                                                 className="modal__input"
                                                 required
+                                                maxLength="3"
                                             />
+
+                                            {/* файл / ссылка */}
                                             <div className="modal__upload-container">
                                                 <div className="modal__upload-options">
                                                     <label
-                                                        className={`modal__upload-button ${fileUploaded ? "modal__upload-button--uploaded" : ""}`}
+                                                        className={`modal__upload-button ${fileUploaded
+                                                            ? "modal__upload-button--uploaded"
+                                                            : ""
+                                                            }`}
                                                     >
-                                                        <input type="file" onChange={handleFileUpload} style={{ display: "none" }} />
-                                                        <span>Загрузить резюме</span>
-                                                        {fileUploaded && <span className="modal__upload-icon">✓</span>}
+                                                        <input
+                                                            type="file"
+                                                            onChange={
+                                                                handleFileUpload
+                                                            }
+                                                            style={{
+                                                                display: "none",
+                                                            }}
+                                                        />
+                                                        <span>
+                                                            Загрузить резюме
+                                                        </span>
+                                                        {fileUploaded && (
+                                                            <span className="modal__upload-icon">
+                                                                ✓
+                                                            </span>
+                                                        )}
                                                     </label>
-                                                    <span className="modal__upload-or">или</span>
+
+                                                    <span className="modal__upload-or">
+                                                        или
+                                                    </span>
+
                                                     <input
                                                         type="url"
                                                         name="resumeLink"
-                                                        value={suggestFormData.resumeLink}
-                                                        onChange={handleSuggestFormChange}
+                                                        value={
+                                                            suggestForm.resumeLink
+                                                        }
+                                                        onChange={onSuggestChange}
                                                         placeholder="Ссылка на резюме"
                                                         className="modal__input modal__input--link"
+                                                        maxLength="200"
                                                     />
                                                 </div>
+
                                                 <textarea
                                                     name="additionalInfo"
-                                                    value={suggestFormData.additionalInfo}
-                                                    onChange={handleSuggestFormChange}
-                                                    placeholder="Можете уточнить информацию о себе или, например, рассказать, почему вас заинтересовала вакансия"
+                                                    value={
+                                                        suggestForm.additionalInfo
+                                                    }
+                                                    onChange={onSuggestChange}
+                                                    placeholder="Дополнительная информация"
                                                     className="modal__textarea"
-                                                ></textarea>
+                                                    maxLength="200"
+                                                />
                                             </div>
                                         </div>
+
                                         <div className="modal__buttons">
                                             <button
                                                 type="button"
                                                 className="modal__button modal__button--back"
-                                                onClick={() => setSuggestStep(1)}
+                                                onClick={() =>
+                                                    setSuggestStep(1)
+                                                }
                                             >
                                                 Назад
                                             </button>
-                                            <button type="submit" className="modal__button modal__button--submit">
+
+                                            <button
+                                                type="submit"
+                                                className="modal__button modal__button--submit"
+                                            >
                                                 Отправить
                                             </button>
                                         </div>
@@ -323,11 +452,19 @@ const Footer = () => {
                             </div>
                         )}
 
+                        {/* ШАГ 4 — успех */}
                         {suggestStep === 4 && (
                             <div className="modal__step modal__step--success">
-                                <h2 className="modal__title">Заявка отправлена</h2>
-                                <p className="modal__success-message">Скоро вас рассмотрит наш нанимающий менеджер</p>
-                                <button className="modal__button modal__button--close" onClick={closeSuggestModal}>
+                                <h2 className="modal__title">
+                                    Заявка отправлена
+                                </h2>
+                                <p className="modal__success-message">
+                                    Скоро с&nbsp;вами свяжется менеджер
+                                </p>
+                                <button
+                                    className="modal__button modal__button--close"
+                                    onClick={closeSuggestModal}
+                                >
                                     Закрыть
                                 </button>
                             </div>
@@ -336,7 +473,7 @@ const Footer = () => {
                 </div>
             )}
         </footer>
-    )
-}
+    );
+};
 
-export default Footer
+export default Footer;

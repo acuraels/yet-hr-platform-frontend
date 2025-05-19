@@ -409,6 +409,7 @@ const VacanciesPageMain = () => {
                                                 placeholder="Фамилия, имя и отчество"
                                                 className="modal__input"
                                                 required
+                                                maxLength={'100'}
                                             />
                                             <input
                                                 type="date"
@@ -427,6 +428,7 @@ const VacanciesPageMain = () => {
                                                     placeholder="Номер телефона"
                                                     className="modal__input"
                                                     required
+                                                    maxLength={'20'}
                                                 />
                                                 <input
                                                     type="email"
@@ -436,6 +438,7 @@ const VacanciesPageMain = () => {
                                                     placeholder="Электронная почта"
                                                     className="modal__input"
                                                     required
+                                                    maxLength={'50'}
                                                 />
                                             </div>
                                         </div>
@@ -462,6 +465,7 @@ const VacanciesPageMain = () => {
                                                 placeholder="Опыт (лет)"
                                                 className="modal__input"
                                                 required
+                                                maxLength={'3'}
                                             />
 
                                             {/* файл / ссылка */}
@@ -489,6 +493,7 @@ const VacanciesPageMain = () => {
                                                         onChange={onApplyChange}
                                                         placeholder="Ссылка на резюме"
                                                         className="modal__input modal__input--link"
+                                                        maxLength={'200'}
                                                     />
                                                 </div>
                                                 <textarea
@@ -497,6 +502,7 @@ const VacanciesPageMain = () => {
                                                     onChange={onApplyChange}
                                                     placeholder="Дополнительная информация"
                                                     className="modal__textarea"
+                                                    maxLength={'200'}
                                                 />
                                             </div>
                                         </div>
@@ -564,6 +570,7 @@ const VacanciesPageMain = () => {
                                                 placeholder="Фамилия, имя и отчество"
                                                 className="modal__input"
                                                 required
+                                                maxLength={'100'}
                                             />
                                             <input
                                                 type="date"
@@ -582,6 +589,7 @@ const VacanciesPageMain = () => {
                                                     placeholder="Номер телефона"
                                                     className="modal__input"
                                                     required
+                                                    maxLength={'20'}
                                                 />
                                                 <input
                                                     type="email"
@@ -591,6 +599,7 @@ const VacanciesPageMain = () => {
                                                     placeholder="Электронная почта"
                                                     className="modal__input"
                                                     required
+                                                    maxLength={'50'}
                                                 />
                                             </div>
                                         </div>
@@ -617,6 +626,7 @@ const VacanciesPageMain = () => {
                                                 placeholder="Желаемая роль"
                                                 className="modal__input"
                                                 required
+                                                maxLength={'100'}
                                             />
                                             <input
                                                 type="text"
@@ -626,6 +636,7 @@ const VacanciesPageMain = () => {
                                                 placeholder="Опыт (лет)"
                                                 className="modal__input"
                                                 required
+                                                maxLength={'3'}
                                             />
 
                                             {/* файл / ссылка */}
@@ -653,6 +664,7 @@ const VacanciesPageMain = () => {
                                                         onChange={onSuggestChange}
                                                         placeholder="Ссылка на резюме"
                                                         className="modal__input modal__input--link"
+                                                        maxLength={'200'}
                                                     />
                                                 </div>
                                                 <textarea
@@ -661,6 +673,7 @@ const VacanciesPageMain = () => {
                                                     onChange={onSuggestChange}
                                                     placeholder="Дополнительная информация"
                                                     className="modal__textarea"
+                                                    maxLength={'200'}
                                                 />
                                             </div>
                                         </div>

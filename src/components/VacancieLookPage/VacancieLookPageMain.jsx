@@ -18,7 +18,7 @@ const VacancieLookPageMain = () => {
             try {
                 setLoading(true);
                 const { data } = await axiosInstance.get(
-                    `manager/vacancies/${id}/`,
+                    `user/vacancy/${id}/`,
                     { signal: controller.signal },
                 );
                 setCurrentVacancy(data);

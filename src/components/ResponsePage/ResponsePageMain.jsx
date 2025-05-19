@@ -1,208 +1,152 @@
-"use client"
+// frontend/src/pages/ResponsePageMain.jsx
+import { useState, useEffect } from "react";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
+import axiosInstance from "../../utils/axiosInstance";
+import fileDownload from "js-file-download";
+import { toast } from "react-hot-toast";
+import "./ResponsePageMain.css";
 
-import { useState, useEffect } from "react"
-import { Link, useParams, useNavigate, useLocation } from "react-router-dom"
-import "./ResponsePageMain.css"
+// label maps --------------------------------------------------
+const workFormatLabels = {
+    ON_SITE: "Офис",
+    REMOTE: "Удалённо",
+    HYBRID: "Гибрид",
+    FIELD_WORK: "Разъездная работа",
+};
+
+const statusOptions = [
+    { value: "NOT_VIEWED", label: "не разобран", className: "response-page__status-option--not-sorted" },
+    { value: "REJECTED", label: "отклонён", className: "response-page__status-option--rejected" },
+    { value: "APPROVED", label: "одобрен", className: "response-page__status-option--approved" },
+    { value: "INTERVIEW_CONFIRMED", label: "назначена встреча", className: "response-page__status-option--meeting" },
+    { value: "CLOSED", label: "архивировано", className: "response-page__status-option--archived" },
+];
+
+// helpers -----------------------------------------------------
+const calcAge = (d) => {
+    const bd = new Date(d);
+    const now = new Date();
+    let a = now.getFullYear() - bd.getFullYear();
+    const m = now.getMonth() - bd.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < bd.getDate())) a--;
+    return a;
+};
+
+const clean = (val) => (val ? val.trim() : "");
 
 const ResponsePageMain = () => {
-    const { id } = useParams()
-    const navigate = useNavigate()
-    const location = useLocation()
-    const queryParams = new URLSearchParams(location.search)
-    const returnTab = queryParams.get('tab') || 'not-sorted'
+    // ---------- routing ----------
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const { search } = useLocation();
+    const returnTab = new URLSearchParams(search).get("tab") || "not-sorted";
 
-    // State for the candidate data
-    const [candidate, setCandidate] = useState(null)
-    const [loading, setLoading] = useState(true)
-    const [statusDropdownOpen, setStatusDropdownOpen] = useState(false)
-    const [selectedStatus, setSelectedStatus] = useState("")
-    const [notes, setNotes] = useState("")
-    const [originalStatus, setOriginalStatus] = useState("")
+    // ---------- state ----------
+    const [candidate, setCandidate] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [statusOpen, setStatusOpen] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState("");
+    const [notes, setNotes] = useState("");
+    const [originalStatus, setOriginalStatus] = useState("");
 
-    // Mock data - in a real app, you would fetch this from an API
-    const candidatesData = [
-        {
-            id: 1,
-            position: "Продуктовый аналитик",
-            description: "Короткое описание вакансии. Короткое описание вакансии.",
-            tags: ["г.Екатеринбург", "Офис"],
-            experience: "Опыт от 1 года",
-            name: "Шаматов Рафаэль Рафитович",
-            age: 20,
-            email: "shamatovrafa@gmail.com",
-            phone: "+7 (919) 387-05-56",
-            candidateExperience: "Опыт 1.5 года",
-            date: "26.09.2024",
-            time: "19:15",
-            status: "not-sorted",
-            additionalInfo: "Комментарий соискателя (сопроводительное письмо)\nКомментарий соискателя (сопроводительное письмо)\nКомментарий соискателя (сопроводительное письмо)\nКомментарий соискателя (сопроводительное письмо)",
-            notes: "",
-            resumeLink: "#",
-        },
-        {
-            id: 2,
-            position: "Продуктовый аналитик",
-            description: "Короткое описание вакансии. Короткое описание вакансии.",
-            tags: ["г.Екатеринбург", "Офис"],
-            experience: "Опыт от 1 года",
-            name: "Иванов Иван Иванович",
-            age: 25,
-            email: "test@test.com",
-            phone: "+7 (999) 999-99-99",
-            candidateExperience: "Опыт 3 месяца",
-            date: "26.09.2024",
-            time: "19:15",
-            status: "rejected",
-            additionalInfo: "",
-            notes: "Не подходит по опыту",
-            resumeLink: "#",
-        },
-        {
-            id: 3,
-            position: "Продуктовый аналитик",
-            description: "Короткое описание вакансии. Короткое описание вакансии.",
-            tags: ["г.Екатеринбург", "Офис", "Свой кандидат"],
-            experience: "Опыт от 1 года",
-            name: "Машина Маша Машиновна",
-            age: 17,
-            email: "test@test.com",
-            phone: "+7 (999) 999-99-99",
-            candidateExperience: "Без опыта",
-            date: "26.09.2024",
-            time: "19:15",
-            status: "approved",
-            additionalInfo: 'То, что написал кандидат в поле "Чем бы Вы хотели заниматься? На какую роль претендуете?"',
-            notes: "Перспективный кандидат",
-            resumeLink: "#",
-        },
-        {
-            id: 4,
-            position: "Продуктовый аналитик",
-            description: "Короткое описание вакансии. Короткое описание вакансии.",
-            tags: ["г.Екатеринбург", "Офис"],
-            experience: "Опыт от 1 года",
-            name: "Машина Маша Машиновна",
-            age: 17,
-            email: "test@test.com",
-            phone: "+7 (999) 999-99-99",
-            candidateExperience: "Без опыта",
-            date: "26.09.2024",
-            time: "19:15",
-            status: "meeting-scheduled",
-            additionalInfo: "",
-            notes: "Встреча назначена на 30.09.2024",
-            resumeLink: "#",
-        },
-        {
-            id: 5,
-            position: "Продуктовый аналитик",
-            description: "Короткое описание вакансии. Короткое описание вакансии.",
-            tags: ["г.Екатеринбург", "Офис"],
-            experience: "Опыт от 1 года",
-            name: "Иванов Иван Иванович",
-            age: 25,
-            email: "test@test.com",
-            phone: "+7 (999) 999-99-99",
-            candidateExperience: "Опыт 3 месяца",
-            date: "26.09.2024",
-            time: "19:15",
-            status: "archived",
-            additionalInfo: "",
-            notes: "Архивировано 25.09.2024",
-            resumeLink: "#",
-        },
-    ]
+    // ---------- adapt dto → ui ----------
+    const adapt = (data) => {
+        const position = clean(data.desired_role) || clean(data.vacancy?.title) || "Не указана должность";
+        const description = clean(data.letter);
+        const tags = [
+            ...(data.vacancy?.areas || []),
+            ...(data.vacancy?.work_formats?.map((w) => workFormatLabels[w] || w) || []),
+        ];
+        return {
+            ...data,
+            position,
+            description,
+            resumeLink: data.resume_file || data.resume_url || "#", // file has приоритет
+            tags,
+            candidateExperience: data.experience === 0 ? "Без опыта" : `${data.experience} лет`,
+            time: new Date(data.created_at).toLocaleTimeString(),
+            date: new Date(data.created_at).toLocaleDateString(),
+            age: calcAge(data.birth_date),
+        };
+    };
 
-    // Status options with their display names and classes
-    const statusOptions = [
-        { value: "not-sorted", label: "не разобран", className: "response-page__status-option--not-sorted" },
-        { value: "rejected", label: "отклонен", className: "response-page__status-option--rejected" },
-        { value: "approved", label: "одобрен", className: "response-page__status-option--approved" },
-        { value: "meeting-scheduled", label: "назначена встреча", className: "response-page__status-option--meeting" },
-        { value: "archived", label: "архивировано", className: "response-page__status-option--archived" },
-    ]
-
-    // Load candidate data
+    // ---------- fetch ----------
     useEffect(() => {
-        // Simulate API call
-        const fetchCandidate = () => {
-            setLoading(true)
-            // Find candidate by ID
-            const foundCandidate = candidatesData.find(c => c.id === parseInt(id))
-
-            if (foundCandidate) {
-                setCandidate(foundCandidate)
-                setSelectedStatus(foundCandidate.status)
-                setOriginalStatus(foundCandidate.status)
-                setNotes(foundCandidate.notes || "")
+        (async () => {
+            setLoading(true);
+            try {
+                const { data } = await axiosInstance.get(`candidate/response/${id}`);
+                const c = adapt(data);
+                setCandidate(c);
+                setSelectedStatus(data.status);
+                setOriginalStatus(data.status);
+                setNotes(data.notes || "");
+            } catch (e) {
+                toast.error("Не удалось загрузить отклик");
+                setCandidate(null);
+            } finally {
+                setLoading(false);
             }
+        })();
+    }, [id]);
 
-            setLoading(false)
+    // ---------- actions ----------
+    const save = async () => {
+        try {
+            await axiosInstance.patch(`candidate/response/${id}`, { status: selectedStatus, notes });
+            toast.success("Сохранено 👍");
+            const backTab = selectedStatus !== originalStatus ? selectedStatus : returnTab;
+            navigate(`/vacancies-responses?tab=${backTab}`);
+        } catch (e) {
+            toast.error("Ошибка сохранения");
         }
+    };
 
-        fetchCandidate()
-    }, [id])
+    const copyLink = async () => {
+        try {
+            await navigator.clipboard.writeText(candidate.resumeLink);
+            toast.success("Ссылка скопирована в буфер📋");
+        } catch {
+            toast.error("Не удалось скопировать ссылку");
+        }
+    };
 
-    // Handle status change
-    const handleStatusChange = (status) => {
-        setSelectedStatus(status)
-        setStatusDropdownOpen(false)
-    }
+    const downloadResume = async () => {
+        try {
+            const res = await axiosInstance.get(candidate.resumeLink, { responseType: "blob" });
+            const filename = decodeURIComponent(candidate.resumeLink.split("/").pop());
+            fileDownload(res.data, filename);
+            toast.success("Резюме скачано⬇️");
+        } catch (e) {
+            toast.error("Ошибка скачивания резюме");
+        }
+    };
 
-    // Handle save
-    const handleSave = () => {
-        // In a real app, you would send this data to your API
-        console.log("Saving changes:", {
-            id,
-            status: selectedStatus,
-            notes
-        })
+    // ---------- ui helpers ----------
+    const statusName = (v) => statusOptions.find((o) => o.value === v)?.label || "не разобран";
+    const statusClass = (v) => statusOptions.find((o) => o.value === v)?.className || "";
 
-        // Navigate back to the responses page with the appropriate tab selected
-        // If the status has changed, navigate to the new status tab
-        const tabToReturn = selectedStatus !== originalStatus ? selectedStatus : returnTab
-        navigate(`/vacancies-responses?tab=${tabToReturn}`)
-    }
-
-    // Get status display name
-    const getStatusDisplayName = (statusValue) => {
-        const option = statusOptions.find(opt => opt.value === statusValue)
-        return option ? option.label : "не разобран"
-    }
-
-    // Get status class
-    const getStatusClass = (statusValue) => {
-        const option = statusOptions.find(opt => opt.value === statusValue)
-        return option ? option.className : ""
-    }
-
-    if (loading) {
-        return <div className="response-page__loading">Загрузка...</div>
-    }
-
-    if (!candidate) {
-        return <div className="response-page__error">Отклик не найден</div>
-    }
+    // ---------- render ----------
+    if (loading) return <div className="response-page__loading">Загрузка…</div>;
+    if (!candidate) return <div className="response-page__error">Отклик не найден</div>;
 
     return (
         <main className="response-page__main">
             <div className="response-page__container">
-                <Link
-                    to={`/vacancies-responses?tab=${returnTab}`}
-                    className="response-page__back-link"
-                >
+                <Link to={`/vacancies-responses?tab=${returnTab}`} className="response-page__back-link">
                     ←
                 </Link>
+
+                {/* header */}
                 <div className="response-page__header">
                     <div className="response-page__meta">
                         <div className="response-page__tags">
-                            {candidate.tags.map((tag, index) => (
-                                <span key={index} className="response-page__tag">
-                                    {tag}
+                            {candidate.tags.map((t, i) => (
+                                <span key={i} className="response-page__tag">
+                                    {t}
                                 </span>
                             ))}
                         </div>
-
                         <h1 className="response-page__title">{candidate.position}</h1>
                         <p className="response-page__description">{candidate.description}</p>
                     </div>
@@ -216,7 +160,9 @@ const ResponsePageMain = () => {
                     </div>
                 </div>
 
+                {/* content */}
                 <div className="response-page__content">
+                    {/* left column */}
                     <div className="response-page__left-column">
                         <div className="response-page__candidate-info">
                             <h2 className="response-page__candidate-name">
@@ -224,54 +170,56 @@ const ResponsePageMain = () => {
                             </h2>
                             <p className="response-page__candidate-email">{candidate.email}</p>
                             <p className="response-page__candidate-phone">{candidate.phone}</p>
-                            <p className={`response-page__candidate-experience ${candidate.candidateExperience === "Без опыта"
-                                ? "response-page__candidate-experience--none"
-                                : ""
-                                }`}>
+                            <p
+                                className={`response-page__candidate-experience ${candidate.candidateExperience === "Без опыта" ? "response-page__candidate-experience--none" : ""
+                                    }`}
+                            >
                                 {candidate.candidateExperience}
                             </p>
                         </div>
 
                         <div className="response-page__resume-actions">
-                            <button className="response-page__download-button">
+                            <button onClick={downloadResume} className="response-page__download-button">
                                 Скачать резюме
                             </button>
-                            <a href={candidate.resumeLink} className="response-page__resume-link">
-                                Ссылка на резюме
-                            </a>
+                            <button onClick={copyLink} className="response-page__resume-link">
+                                Копировать ссылку
+                            </button>
                         </div>
 
-                        {candidate.additionalInfo && (
+                        {!!candidate.additionalInfo && (
                             <div className="response-page__additional-info">
                                 <h3 className="response-page__section-title">Дополнение</h3>
-                                <p className="response-page__additional-text">
-                                    {candidate.additionalInfo}
-                                </p>
+                                <p className="response-page__additional-text">{candidate.additionalInfo}</p>
                             </div>
                         )}
                     </div>
 
+                    {/* right column */}
                     <div className="response-page__right-column">
+                        {/* status */}
                         <div className="response-page__status-section">
                             <h3 className="response-page__section-title">Статус</h3>
                             <div className="response-page__status-dropdown">
                                 <button
-                                    className={`response-page__status-button ${getStatusClass(selectedStatus)}`}
-                                    onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
+                                    className={`response-page__status-button ${statusClass(selectedStatus)}`}
+                                    onClick={() => setStatusOpen((o) => !o)}
                                 >
-                                    {getStatusDisplayName(selectedStatus)}
-                                    <span className="response-page__dropdown-arrow">▼</span>
+                                    {statusName(selectedStatus)} <span className="response-page__dropdown-arrow">▼</span>
                                 </button>
 
-                                {statusDropdownOpen && (
+                                {statusOpen && (
                                     <div className="response-page__status-options">
-                                        {statusOptions.map(option => (
+                                        {statusOptions.map((o) => (
                                             <button
-                                                key={option.value}
-                                                className={`response-page__status-option ${option.className}`}
-                                                onClick={() => handleStatusChange(option.value)}
+                                                key={o.value}
+                                                className={`response-page__status-option ${o.className}`}
+                                                onClick={() => {
+                                                    setSelectedStatus(o.value);
+                                                    setStatusOpen(false);
+                                                }}
                                             >
-                                                {option.label}
+                                                {o.label}
                                             </button>
                                         ))}
                                     </div>
@@ -279,27 +227,25 @@ const ResponsePageMain = () => {
                             </div>
                         </div>
 
+                        {/* notes */}
                         <div className="response-page__notes-section">
                             <h3 className="response-page__section-title">Заметка</h3>
                             <textarea
                                 className="response-page__notes-textarea"
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
-                                placeholder="Добавьте заметку о кандидате..."
+                                placeholder="Добавьте заметку о кандидате…"
                             />
                         </div>
 
-                        <button
-                            className="response-page__save-button"
-                            onClick={handleSave}
-                        >
+                        <button className="response-page__save-button" onClick={save}>
                             сохранить
                         </button>
                     </div>
                 </div>
             </div>
         </main>
-    )
+    );
 }
 
 export default ResponsePageMain;

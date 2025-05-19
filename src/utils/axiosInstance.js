@@ -31,7 +31,7 @@ axiosInstance.interceptors.response.use(
 
             try {
                 const { data } = await axios.post(
-                    'http://192.168.1.122:8000/api/accounts/token/refresh/',
+                    'http://192.168.1.122:8000/api/v1/accounts/token/refresh/',
                     { refresh: refreshToken }
                 );
                 localStorage.setItem('access_token', data.access);
