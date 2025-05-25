@@ -7,12 +7,12 @@
 }
 
 .hh {
-    background-color: #ff4d3a !important;
+    background-color: #7D88FF !important;
     color: #fff !important;
 }
 
 .hh:hover {
-    background-color: #820e01 !important;
+    background-color: #626bcc !important;
 }
 
 @keyframes fadeIn {

@@ -120,7 +120,7 @@ const ContactsPageMain = () => {
                                         </a>
                                     </div>
 
-                                    <button className="office-info__button">Написать нам</button>
+                                    <a href="mailto:uet.hiring@test.com" className="office-info__button">Написать нам</a>
                                 </div>
                             </div>
 
@@ -202,7 +202,7 @@ const ContactsPageMain = () => {
                                         </a>
                                     </div>
 
-                                    <button className="office-info__button">Написать нам</button>
+                                    <a href="mailto:uet.hiring@test.com" className="office-info__button">Написать нам</a>
                                 </div>
                             </div>
 

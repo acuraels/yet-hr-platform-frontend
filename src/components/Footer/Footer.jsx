@@ -238,18 +238,9 @@ const Footer = () => {
                     <div className="footer__column">
                         <h3 className="footer__heading">Также мы</h3>
                         <nav className="footer__nav">
-                            <Link to="/here" className="footer__nav-link">
-                                вот&nbsp;тут
-                            </Link>
-                            <Link to="/more" className="footer__nav-link">
-                                ещё&nbsp;тут
-                            </Link>
-                            <Link to="/there" className="footer__nav-link">
-                                тама
-                            </Link>
-                            <Link to="/somewhere" className="footer__nav-link">
-                                тута
-                            </Link>
+                            <a href="https://uralenergotel.ru/" className="footer__nav-link" target="blank">
+                                Торговая&nbsp;площадка
+                            </a>
                         </nav>
                     </div>
                 </div>

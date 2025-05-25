@@ -103,6 +103,7 @@
 }
 
 .office-info__button {
+    color: #000;
     display: inline-block;
     background-color: transparent;
     border: 1px solid #000;
