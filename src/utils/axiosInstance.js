@@ -1,3 +1,4 @@
+// src/utils/axiosInstance.js
 import axios from 'axios';
 
 const axiosInstance = axios.create({
@@ -24,25 +25,26 @@ axiosInstance.interceptors.response.use(
             originalRequest._retry = true;
             const refreshToken = localStorage.getItem('refresh_token');
 
-            if (!refreshToken) {
-                window.location.href = '/login';
-                return Promise.reject(error);
+            if (refreshToken) {
+                try {
+                    const { data } = await axios.post(
+                        'http://192.168.1.122:8000/api/v1/accounts/token/refresh/',
+                        { refresh: refreshToken }
+                    );
+                    localStorage.setItem('access_token', data.access);
+                    axiosInstance.defaults.headers['Authorization'] = 'Bearer ' + data.access;
+                    originalRequest.headers['Authorization'] = 'Bearer ' + data.access;
+                    return axiosInstance(originalRequest);
+                } catch {
+                    // рефреш упал — дальше очистка
+                }
             }
 
-            try {
-                const { data } = await axios.post(
-                    'http://192.168.1.122:8000/api/v1/accounts/token/refresh/',
-                    { refresh: refreshToken }
-                );
-                localStorage.setItem('access_token', data.access);
-                axiosInstance.defaults.headers['Authorization'] = 'Bearer ' + data.access;
-                originalRequest.headers['Authorization'] = 'Bearer ' + data.access;
-                return axiosInstance(originalRequest);
-            } catch (refreshError) {
-                console.error('Ошибка обновления токена:', refreshError);
-                window.location.href = '/login';
-                return Promise.reject(refreshError);
-            }
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('user_role');
+            localStorage.removeItem('user_id');
+            window.location.href = '/login';
         }
 
         return Promise.reject(error);
@@ -50,4 +52,3 @@ axiosInstance.interceptors.response.use(
 );
 
 export default axiosInstance;
-

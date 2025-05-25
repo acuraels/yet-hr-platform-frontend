@@ -1,7 +1,7 @@
-// src/components/VacanciesListMain/VacanciesListMain.jsx
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
+import { toast } from 'react-toastify';
 import "./VacanciesListMain.css";
 
 const WORK_FORMAT_LABELS = {
@@ -19,6 +19,31 @@ const FORMAT_OPTIONS = [
 ];
 
 const VacanciesListMain = () => {
+
+
+    const [loading1, setLoading1] = useState(false);
+    const [error, setError] = useState(null);
+    const [count, setCount] = useState(null);
+
+    const syncVacancies = async () => {
+        setLoading1(true);
+        setError(null);
+
+        try {
+            const { data } = await axiosInstance.post('sync-vacancies/');
+            setCount(data.created);
+            toast.success(`Синхронизировано вакансий: ${data.created}`);
+        } catch (err) {
+            console.error('Ошибка синхронизации:', err);
+            const msg = err.response?.data?.detail || err.message;
+            setError(msg);
+            toast.error(`Ошибка синхронизации: ${msg}`);
+        } finally {
+            setLoading1(false);
+        }
+    };
+
+
     /* -------- стейты -------- */
     const [isArchive, setIsArchive] = useState(false);
     const [vacancies, setVacancies] = useState([]);
@@ -156,9 +181,28 @@ const VacanciesListMain = () => {
                             </Link>
 
                         )}
-                        <Link to="/hh" className="hr-vacancies-header__create-btn hh">
-                            Синхронизировать вакансии с HH.RU
-                        </Link>
+                        <div className="hr-vacancies-header__create-btn-wrapper">
+                            <button
+                                className="hr-vacancies-header__create-btn hh"
+                                onClick={syncVacancies}
+                                disabled={loading1}
+                            >
+                                {loading1 ? 'Синхронизируем...' : 'Синхронизировать вакансии с HH.RU'}
+                            </button>
+
+                            {error && (
+                                <div className="sync-error">
+                                    Не удалось синхронизировать: {error}
+                                </div>
+                            )}
+
+                            {count != null && !loading1 && !error && (
+                                <div className="sync-success">
+                                    Добавлено новых вакансий: {count}
+                                </div>
+                            )}
+                        </div>
+
                         <div className="hr-vacancies-header__bottom-row">
                             <button className="hr-vacancies-header__archive-btn" onClick={toggleArchive}>
                                 {isArchive ? "вернуться к вакансиям" : "архив вакансий"}
