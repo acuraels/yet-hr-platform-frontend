@@ -1,7 +1,23 @@
-import React, { useState, useEffect } from "react"
+"use client"
+
+import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import axiosInstance from "../../utils/axiosInstance"
 import "./VacanciesResponsesMain.css"
+
+// Хелпер для чистки строк
+const clean = (val) => (val ? val.trim() : "")
+
+// Хелпер для склонения лет/год/года
+const pluralYears = (n) => {
+    const num = Math.abs(Math.floor(n))
+    const lastTwo = num % 100
+    if (lastTwo >= 11 && lastTwo <= 14) return "лет"
+    const last = num % 10
+    if (last === 1) return "год"
+    if (last >= 2 && last <= 4) return "года"
+    return "лет"
+}
 
 const VacanciesResponsesMain = () => {
     // конфига для табов
@@ -69,48 +85,49 @@ const VacanciesResponsesMain = () => {
 
         axiosInstance
             .get("/candidate/responses/", { params: { status: cfg.apiStatus } })
-            .then(res => {
-                // приводим статус из API в наш UI‑ключ
-                const uiData = res.data.map(item => {
-                    const uiKey = Object.entries(TAB_CONFIG).find(
-                        ([ui, info]) => info.apiStatus === item.status
-                    )?.[0]
-                    return { ...item, status: uiKey || item.status }
+            .then((res) => {
+                // Приводим статус из API в наш UI-ключ и добавляем position/description
+                const uiData = res.data.map((item) => {
+                    const uiKey = Object.entries(TAB_CONFIG).find(([ui, info]) => info.apiStatus === item.status)?.[0]
+                    // Собираем заголовок и описание, как на ResponsePageMain
+                    const position = clean(item.desired_role) || clean(item.vacancy?.title) || "Не указана должность"
+                    const description = clean(item.letter)
+                    return { ...item, status: uiKey || item.status, position, description }
                 })
                 setCandidates(uiData)
             })
-            .catch(err => {
+            .catch((err) => {
                 setError(err.response?.statusText || err.message)
             })
             .finally(() => setLoading(false))
     }, [activeTab])
 
     // хэндлеры фильтров
-    const handleCityChange = e => {
+    const handleCityChange = (e) => {
         const { name, checked } = e.target
         if (name === "any") {
             setCityFilter({ any: checked, Москва: false, Екатеринбург: false, Сыктывкар: false })
         } else {
-            setCityFilter(prev => {
+            setCityFilter((prev) => {
                 const next = { ...prev, [name]: checked }
                 if (checked) next.any = false
                 // если ни один город не выбран — включаем any
-                const anySpec = cityOptions.some(city => next[city])
+                const anySpec = cityOptions.some((city) => next[city])
                 if (!anySpec) next.any = true
                 return next
             })
         }
     }
 
-    const handleWorkChange = e => {
+    const handleWorkChange = (e) => {
         const { name, checked } = e.target
         if (name === "any") {
             setWorkFilter({ any: checked, ON_SITE: false, HYBRID: false, REMOTE: false, FIELD_WORK: false })
         } else {
-            setWorkFilter(prev => {
+            setWorkFilter((prev) => {
                 const next = { ...prev, [name]: checked }
                 if (checked) next.any = false
-                const anySpec = workOptions.some(opt => next[opt.code])
+                const anySpec = workOptions.some((opt) => next[opt.code])
                 if (!anySpec) next.any = true
                 return next
             })
@@ -119,20 +136,18 @@ const VacanciesResponsesMain = () => {
 
     // основной фильтр на отображение
     const filtered = candidates
-        .filter(c => c.status === activeTab)
-        .filter(c => {
+        .filter((c) => c.status === activeTab)
+        .filter((c) => {
             // 1) город
             const areas = c.vacancy?.areas ?? []
             if (!cityFilter.any) {
-                const okCity = areas.some(area =>
-                    cityOptions.some(city => cityFilter[city] && area.includes(city))
-                )
+                const okCity = areas.some((area) => cityOptions.some((city) => cityFilter[city] && area.includes(city)))
                 if (!okCity) return false
             }
             // 2) формат работы
             const fmts = c.vacancy?.work_formats ?? []
             if (!workFilter.any) {
-                const okFmt = fmts.some(fmt => workFilter[fmt])
+                const okFmt = fmts.some((fmt) => workFilter[fmt])
                 if (!okFmt) return false
             }
             // 3) опыт
@@ -144,7 +159,7 @@ const VacanciesResponsesMain = () => {
             return true
         })
 
-    const getCardClass = status => {
+    const getCardClass = (status) => {
         const suffix = TAB_CONFIG[status]?.cardClassSuffix || ""
         return `candidate-card${suffix}`
     }
@@ -155,9 +170,7 @@ const VacanciesResponsesMain = () => {
                 {/* Архив */}
                 <div className="vacancies-responses__archive-link-container">
                     <button
-                        className={`vacancies-responses__archive-link ${activeTab === "archived"
-                            ? "vacancies-responses__archive-link--active"
-                            : ""
+                        className={`vacancies-responses__archive-link ${activeTab === "archived" ? "vacancies-responses__archive-link--active" : ""
                             }`}
                         onClick={() => setActiveTab("archived")}
                     >
@@ -165,7 +178,7 @@ const VacanciesResponsesMain = () => {
                     </button>
                 </div>
 
-                {/* Таб‑бар */}
+                {/* Таб-бар */}
                 <div className="vacancies-responses__tabs">
                     {Object.entries(TAB_CONFIG)
                         .filter(([key]) => key !== "archived")
@@ -191,63 +204,47 @@ const VacanciesResponsesMain = () => {
                         {error && <p className="error">Ошибка: {error}</p>}
                         {!loading &&
                             !error &&
-                            filtered.map(c => (
-                                <Link
-                                    key={c.id}
-                                    to={`/vacancies-responses/${c.id}?tab=${activeTab}`}
-                                    className="candidate-card-link"
-                                >
+                            filtered.map((c) => (
+                                <Link key={c.id} to={`/vacancies-responses/${c.id}?tab=${activeTab}`} className="candidate-card-link">
                                     <div className={`candidate-card ${getCardClass(c.status)}`}>
                                         <div className="candidate-card__left">
-                                            <p className="candidate-card__experience hero">{c.vacancy?.title}</p>
-                                            <div className="candidate-card__tags">
-                                                {(c.vacancy?.areas ?? []).map((area, i) => (
-                                                    <span key={`${area}-${i}`} className="candidate-card__tag">
-                                                        {area}
-                                                    </span>
-                                                ))}
-                                                {(c.vacancy?.work_formats ?? []).map((fmt, j) => (
-                                                    <span key={`${fmt}-${j}`} className="candidate-card__tag">
-                                                        {workFormatLabels[fmt] || fmt}
-                                                    </span>
-                                                ))}
-                                            </div>
-
-                                            <p className="candidate-card__experience">{c.name}</p>
-                                            {c.notes && (
-                                                <p className="candidate-card__additional-info">{c.notes}</p>
-                                            )}
+                                            <h3 className="candidate-card__vacancy-title">{c.position}</h3>
+                                            <p className="candidate-card__vacancy-description">
+                                                {c.description || "—"}
+                                            </p>
                                         </div>
                                         <div className="candidate-card__right">
                                             <div className="candidate-card__response-info">
                                                 <p className="candidate-card__response-label">Отклик в</p>
-                                                <div className="candidate-card__created">
-                                                    {new Date(c.created_at).toLocaleString("ru-RU", {
-                                                        day: "2-digit",
-                                                        month: "2-digit",
-                                                        year: "numeric",
-                                                        hour: "2-digit",
-                                                        minute: "2-digit",
-                                                    })}
-                                                </div>
                                                 <div className="candidate-card__response-datetime">
-                                                    <span className="candidate-card__response-time">{c.time}</span>
-                                                    <span className="candidate-card__response-date">{c.date}</span>
+                                                    <span className="candidate-card__response-time">
+                                                        {new Date(c.created_at).toLocaleTimeString("ru-RU", {
+                                                            hour: "2-digit",
+                                                            minute: "2-digit",
+                                                        })}
+                                                    </span>
+                                                    <span className="candidate-card__response-date">
+                                                        {new Date(c.created_at).toLocaleDateString("ru-RU", {
+                                                            day: "2-digit",
+                                                            month: "2-digit",
+                                                            year: "numeric",
+                                                        })}
+                                                    </span>
                                                 </div>
                                             </div>
                                             <div className="candidate-card__candidate-info">
                                                 <p className="candidate-card__candidate-name">
-                                                    {c.experience}, {c.age} лет
+                                                    {c.name},
                                                 </p>
                                                 <p className="candidate-card__candidate-email">{c.email}</p>
                                                 <p className="candidate-card__candidate-phone">{c.phone}</p>
                                                 <p
-                                                    className={`candidate-card__candidate-experience ${c.candidateExperience === "Без опыта"
-                                                        ? "candidate-card__candidate-experience--none"
-                                                        : ""
+                                                    className={`candidate-card__candidate-experience ${Number.parseFloat(c.experience) > 0
+                                                        ? "candidate-card__candidate-experience--with-experience"
+                                                        : "candidate-card__candidate-experience--none"
                                                         }`}
                                                 >
-                                                    {c.candidateExperience}
+                                                    Опыт {c.experience} {pluralYears(c.experience)}
                                                 </p>
                                             </div>
                                         </div>
@@ -265,22 +262,12 @@ const VacanciesResponsesMain = () => {
                             <h4 className="vacancies-responses__filter-group-title">Местоположение</h4>
                             <div className="vacancies-responses__filter-options">
                                 <label className="vacancies-responses__filter-option">
-                                    <input
-                                        type="checkbox"
-                                        name="any"
-                                        checked={cityFilter.any}
-                                        onChange={handleCityChange}
-                                    />
+                                    <input type="checkbox" name="any" checked={cityFilter.any} onChange={handleCityChange} />
                                     <span>Любой город</span>
                                 </label>
-                                {cityOptions.map(city => (
+                                {cityOptions.map((city) => (
                                     <label key={city} className="vacancies-responses__filter-option">
-                                        <input
-                                            type="checkbox"
-                                            name={city}
-                                            checked={cityFilter[city]}
-                                            onChange={handleCityChange}
-                                        />
+                                        <input type="checkbox" name={city} checked={cityFilter[city]} onChange={handleCityChange} />
                                         <span>{city}</span>
                                     </label>
                                 ))}
@@ -292,22 +279,12 @@ const VacanciesResponsesMain = () => {
                             <h4 className="vacancies-responses__filter-group-title">Формат работы</h4>
                             <div className="vacancies-responses__filter-options">
                                 <label className="vacancies-responses__filter-option">
-                                    <input
-                                        type="checkbox"
-                                        name="any"
-                                        checked={workFilter.any}
-                                        onChange={handleWorkChange}
-                                    />
+                                    <input type="checkbox" name="any" checked={workFilter.any} onChange={handleWorkChange} />
                                     <span>Любой</span>
                                 </label>
-                                {workOptions.map(opt => (
+                                {workOptions.map((opt) => (
                                     <label key={opt.code} className="vacancies-responses__filter-option">
-                                        <input
-                                            type="checkbox"
-                                            name={opt.code}
-                                            checked={workFilter[opt.code]}
-                                            onChange={handleWorkChange}
-                                        />
+                                        <input type="checkbox" name={opt.code} checked={workFilter[opt.code]} onChange={handleWorkChange} />
                                         <span>{opt.label}</span>
                                     </label>
                                 ))}
@@ -316,12 +293,10 @@ const VacanciesResponsesMain = () => {
 
                         {/* По опыту */}
                         <div className="vacancies-responses__filter-group">
-                            <h4 className="vacancies-responses__filter-group-title">
-                                Соответствие опыту
-                            </h4>
+                            <h4 className="vacancies-responses__filter-group-title">Соответствие опыту</h4>
                             <div className="vacancies-responses__filter-toggle">
                                 <label className="toggle">
-                                    <input type="checkbox" />
+                                    <input type="checkbox" checked={experienceOnly} onChange={e => setExperienceOnly(e.target.checked)} />
                                     <span className="toggle__slider"></span>
                                 </label>
                             </div>

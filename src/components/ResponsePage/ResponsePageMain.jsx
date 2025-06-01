@@ -1,10 +1,10 @@
 // frontend/src/pages/ResponsePageMain.jsx
-import { useState, useEffect } from "react";
-import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
-import axiosInstance from "../../utils/axiosInstance";
-import fileDownload from "js-file-download";
-import { toast } from "react-hot-toast";
-import "./ResponsePageMain.css";
+import { useState, useEffect } from "react"
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom"
+import axiosInstance from "../../utils/axiosInstance"
+import fileDownload from "js-file-download"
+import { toast } from "react-hot-toast"
+import "./ResponsePageMain.css"
 
 // label maps --------------------------------------------------
 const workFormatLabels = {
@@ -12,7 +12,7 @@ const workFormatLabels = {
     REMOTE: "Удалённо",
     HYBRID: "Гибрид",
     FIELD_WORK: "Разъездная работа",
-};
+}
 
 const statusOptions = [
     { value: "NOT_VIEWED", label: "не разобран", className: "response-page__status-option--not-sorted" },
@@ -20,115 +20,127 @@ const statusOptions = [
     { value: "APPROVED", label: "одобрен", className: "response-page__status-option--approved" },
     { value: "INTERVIEW_CONFIRMED", label: "назначена встреча", className: "response-page__status-option--meeting" },
     { value: "CLOSED", label: "архивировано", className: "response-page__status-option--archived" },
-];
+]
 
 // helpers -----------------------------------------------------
 const calcAge = (d) => {
-    const bd = new Date(d);
-    const now = new Date();
-    let a = now.getFullYear() - bd.getFullYear();
-    const m = now.getMonth() - bd.getMonth();
-    if (m < 0 || (m === 0 && now.getDate() < bd.getDate())) a--;
-    return a;
-};
+    const bd = new Date(d)
+    const now = new Date()
+    let a = now.getFullYear() - bd.getFullYear()
+    const m = now.getMonth() - bd.getMonth()
+    if (m < 0 || (m === 0 && now.getDate() < bd.getDate())) a--
+    return a
+}
 
-const clean = (val) => (val ? val.trim() : "");
+const clean = (val) => (val ? val.trim() : "")
+
+// склонение «год / года / лет»
+const pluralYears = (n) => {
+    const num = Math.abs(Math.floor(n))
+    const lastTwo = num % 100
+    if (lastTwo >= 11 && lastTwo <= 14) return "лет"
+    const last = num % 10
+    if (last === 1) return "год"
+    if (last >= 2 && last <= 4) return "года"
+    return "лет"
+}
 
 const ResponsePageMain = () => {
     // ---------- routing ----------
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const { search } = useLocation();
-    const returnTab = new URLSearchParams(search).get("tab") || "not-sorted";
+    const { id } = useParams()
+    const navigate = useNavigate()
+    const { search } = useLocation()
+    const returnTab = new URLSearchParams(search).get("tab") || "not-sorted"
 
     // ---------- state ----------
-    const [candidate, setCandidate] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [statusOpen, setStatusOpen] = useState(false);
-    const [selectedStatus, setSelectedStatus] = useState("");
-    const [notes, setNotes] = useState("");
-    const [originalStatus, setOriginalStatus] = useState("");
+    const [candidate, setCandidate] = useState(null)
+    const [loading, setLoading] = useState(true)
+    const [statusOpen, setStatusOpen] = useState(false)
+    const [selectedStatus, setSelectedStatus] = useState("")
+    const [notes, setNotes] = useState("")
+    const [originalStatus, setOriginalStatus] = useState("")
 
     // ---------- adapt dto → ui ----------
     const adapt = (data) => {
-        const position = clean(data.desired_role) || clean(data.vacancy?.title) || "Не указана должность";
-        const description = clean(data.letter);
+        const position = clean(data.desired_role) || clean(data.vacancy?.title) || "Не указана должность"
+        const description = clean(data.letter)
         const tags = [
             ...(data.vacancy?.areas || []),
             ...(data.vacancy?.work_formats?.map((w) => workFormatLabels[w] || w) || []),
-        ];
+        ]
         return {
             ...data,
             position,
             description,
             resumeLink: data.resume_file || data.resume_url || "#", // file has приоритет
             tags,
-            candidateExperience: data.experience === 0 ? "Без опыта" : `${data.experience} лет`,
+            candidateExperience:
+                data.experience === 0 ? "Без опыта" : `${data.experience} ${pluralYears(data.experience)}`,
             time: new Date(data.created_at).toLocaleTimeString(),
             date: new Date(data.created_at).toLocaleDateString(),
             age: calcAge(data.birth_date),
-        };
-    };
+        }
+    }
 
     // ---------- fetch ----------
     useEffect(() => {
-        (async () => {
-            setLoading(true);
+        ; (async () => {
+            setLoading(true)
             try {
-                const { data } = await axiosInstance.get(`candidate/response/${id}`);
-                const c = adapt(data);
-                setCandidate(c);
-                setSelectedStatus(data.status);
-                setOriginalStatus(data.status);
-                setNotes(data.notes || "");
+                const { data } = await axiosInstance.get(`candidate/response/${id}`)
+                const c = adapt(data)
+                setCandidate(c)
+                setSelectedStatus(data.status)
+                setOriginalStatus(data.status)
+                setNotes(data.notes || "")
             } catch (e) {
-                toast.error("Не удалось загрузить отклик");
-                setCandidate(null);
+                toast.error("Не удалось загрузить отклик")
+                setCandidate(null)
             } finally {
-                setLoading(false);
+                setLoading(false)
             }
-        })();
-    }, [id]);
+        })()
+    }, [id])
 
     // ---------- actions ----------
     const save = async () => {
         try {
-            await axiosInstance.patch(`candidate/response/${id}`, { status: selectedStatus, notes });
-            toast.success("Сохранено 👍");
-            const backTab = selectedStatus !== originalStatus ? selectedStatus : returnTab;
-            navigate(`/vacancies-responses?tab=${backTab}`);
+            await axiosInstance.patch(`candidate/response/${id}`, { status: selectedStatus, notes })
+            toast.success("Сохранено 👍")
+            const backTab = selectedStatus !== originalStatus ? selectedStatus : returnTab
+            navigate(`/vacancies-responses?tab=${backTab}`)
         } catch (e) {
-            toast.error("Ошибка сохранения");
+            toast.error("Ошибка сохранения")
         }
-    };
+    }
 
     const copyLink = async () => {
         try {
-            await navigator.clipboard.writeText(candidate.resumeLink);
-            toast.success("Ссылка скопирована в буфер📋");
+            await navigator.clipboard.writeText(candidate.resumeLink)
+            toast.success("Ссылка скопирована в буфер📋")
         } catch {
-            toast.error("Не удалось скопировать ссылку");
+            toast.error("Не удалось скопировать ссылку")
         }
-    };
+    }
 
     const downloadResume = async () => {
         try {
-            const res = await axiosInstance.get(candidate.resumeLink, { responseType: "blob" });
-            const filename = decodeURIComponent(candidate.resumeLink.split("/").pop());
-            fileDownload(res.data, filename);
-            toast.success("Резюме скачано⬇️");
+            const res = await axiosInstance.get(candidate.resumeLink, { responseType: "blob" })
+            const filename = decodeURIComponent(candidate.resumeLink.split("/").pop())
+            fileDownload(res.data, filename)
+            toast.success("Резюме скачано⬇️")
         } catch (e) {
-            toast.error("Ошибка скачивания резюме");
+            toast.error("Ошибка скачивания резюме")
         }
-    };
+    }
 
     // ---------- ui helpers ----------
-    const statusName = (v) => statusOptions.find((o) => o.value === v)?.label || "не разобран";
-    const statusClass = (v) => statusOptions.find((o) => o.value === v)?.className || "";
+    const statusName = (v) => statusOptions.find((o) => o.value === v)?.label || "не разобран"
+    const statusClass = (v) => statusOptions.find((o) => o.value === v)?.className || ""
 
     // ---------- render ----------
-    if (loading) return <div className="response-page__loading">Загрузка…</div>;
-    if (!candidate) return <div className="response-page__error">Отклик не найден</div>;
+    if (loading) return <div className="response-page__loading">Загрузка…</div>
+    if (!candidate) return <div className="response-page__error">Отклик не найден</div>
 
     return (
         <main className="response-page__main">
@@ -166,12 +178,14 @@ const ResponsePageMain = () => {
                     <div className="response-page__left-column">
                         <div className="response-page__candidate-info">
                             <h2 className="response-page__candidate-name">
-                                {candidate.name}, {candidate.age} лет
+                                {candidate.name}, {candidate.age} {pluralYears(candidate.age)}
                             </h2>
                             <p className="response-page__candidate-email">{candidate.email}</p>
                             <p className="response-page__candidate-phone">{candidate.phone}</p>
                             <p
-                                className={`response-page__candidate-experience ${candidate.candidateExperience === "Без опыта" ? "response-page__candidate-experience--none" : ""
+                                className={`response-page__candidate-experience ${candidate.candidateExperience === "Без опыта"
+                                    ? "response-page__candidate-experience--none"
+                                    : ""
                                     }`}
                             >
                                 {candidate.candidateExperience}
@@ -215,8 +229,8 @@ const ResponsePageMain = () => {
                                                 key={o.value}
                                                 className={`response-page__status-option ${o.className}`}
                                                 onClick={() => {
-                                                    setSelectedStatus(o.value);
-                                                    setStatusOpen(false);
+                                                    setSelectedStatus(o.value)
+                                                    setStatusOpen(false)
                                                 }}
                                             >
                                                 {o.label}
@@ -245,7 +259,7 @@ const ResponsePageMain = () => {
                 </div>
             </div>
         </main>
-    );
+    )
 }
 
 export default ResponsePageMain;

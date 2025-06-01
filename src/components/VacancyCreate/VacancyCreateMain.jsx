@@ -47,7 +47,7 @@ const VacancyCreateMain = () => {
     const [salaryTo, setSalaryTo] = useState("");
 
     /* Шаг 2: описание */
-    const [descrHTML, setDescrHTML] = useState("<p>Опишите вакансию подробно...</p>");
+    const [descrHTML, setDescrHTML] = useState("Опишите вакансию подробно...");
     const editor = useEditor({
         extensions: [StarterKit, LinkExtension.configure({ openOnClick: false })],
         content: descrHTML,

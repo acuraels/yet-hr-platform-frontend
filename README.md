@@ -39,7 +39,7 @@
 
 ### 1. Клонирование репозитория
 ```bash
-git clone git clone https://github.com/acuraels/yet-hr-platform-frontend.git
+git clone https://github.com/acuraels/yet-hr-platform-frontend.git
 ```
 
 ### 2. Установка зависимостей

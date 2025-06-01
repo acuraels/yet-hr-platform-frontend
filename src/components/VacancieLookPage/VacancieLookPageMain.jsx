@@ -1,12 +1,35 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axiosInstance from "../../utils/axiosInstance";
+import DOMPurify from 'dompurify';
 import './VacancieLookPageMain.css';
+
+// Мапы для нормальных подписей
+const workFormatLabels = {
+    ON_SITE: "Офис",
+    REMOTE: "Удалённо",
+    HYBRID: "Гибрид",
+    FIELD_WORK: "Разъездная работа",
+};
+
+const expLabels = {
+    noExperience: "Без опыта",
+    between1and3: "От 1 до 3 лет",
+    between3and6: "От 3 до 6 лет",
+    moreThan6: "Более 6 лет",
+};
+
+const scheduleLabels = {
+    FIVE_ON_TWO_OFF: "Пятидневка (5/2)",
+    TWO_ON_TWO_OFF: "Два через два (2/2)",
+    SHIFT: "Сменный график",
+    FLEXIBLE: "Гибкий график",
+};
 
 const VacancieLookPageMain = () => {
     const { id } = useParams();
 
-    /* ================= vacancy ================= */
+    // ================= vacancy =================
     const [currentVacancy, setCurrentVacancy] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -34,7 +57,7 @@ const VacancieLookPageMain = () => {
         return () => controller.abort();
     }, [id]);
 
-    /* ================= modal ================= */
+    // ================= modal =================
     const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
     const [applyStep, setApplyStep] = useState(1);
     const [fileUploaded, setFileUploaded] = useState(false);
@@ -50,7 +73,7 @@ const VacancieLookPageMain = () => {
         notes: '',
     });
 
-    /* ---------- helpers ---------- */
+    // ---------- helpers ----------
     const formatSalary = (from, to) => {
         if (from && to) return `${Math.round((from + to) / 2).toLocaleString('ru-RU')} ₽`;
         if (from) return `от ${from.toLocaleString('ru-RU')} ₽`;
@@ -58,7 +81,7 @@ const VacancieLookPageMain = () => {
         return 'не указана';
     };
 
-    /* ---------- handlers ---------- */
+    // ---------- handlers ----------
     const onApplyChange = (e) => {
         const { name, value } = e.target;
         setApplyForm((prev) => ({ ...prev, [name]: value }));
@@ -115,7 +138,7 @@ const VacancieLookPageMain = () => {
         [applyForm, resumeFile, id],
     );
 
-    /* ================= render ================= */
+    // ================= render =================
     if (loading) return <p className="vacancy-look-page__loading">Загружаем…</p>;
     if (error) return <p className="vacancy-look-page__error">{error}</p>;
     if (!currentVacancy) return null;
@@ -166,18 +189,22 @@ const VacancieLookPageMain = () => {
                             <li className="vacancy-look-page__info-item">— Место: {address_raw}</li>
                             {work_formats?.length > 0 && (
                                 <li className="vacancy-look-page__info-item">
-                                    — Формат: {work_formats.join(', ')}
+                                    — Формат: {work_formats.map(wf => workFormatLabels[wf] || wf).join(', ')}
                                 </li>
                             )}
                             {work_schedule && (
-                                <li className="vacancy-look-page__info-item">— Расписание: {work_schedule}</li>
+                                <li className="vacancy-look-page__info-item">
+                                    — Расписание: {scheduleLabels[work_schedule] || work_schedule}
+                                </li>
                             )}
                             {work_time && (
-                                <li className="vacancy-look-page__info-item">— Время: {work_time}</li>
+                                <li className="vacancy-look-page__info-item">
+                                    — Время: {work_time}
+                                </li>
                             )}
                             {required_experience && (
                                 <li className="vacancy-look-page__info-item">
-                                    — Опыт: {required_experience}
+                                    — Опыт: {expLabels[required_experience] || required_experience}
                                 </li>
                             )}
                         </ul>
@@ -191,7 +218,10 @@ const VacancieLookPageMain = () => {
                     </div>
 
                     <div className="vacancy-look-page__content">
-                        <p className="vacancy-look-page__description">{description}</p>
+                        <div
+                            className="vacancy-look-page__description"
+                            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(description) }}
+                        />
                     </div>
                 </article>
 

@@ -6,6 +6,14 @@
     animation: fadeIn 1s ease-out;
 }
 
+.candidate-card__vacancy-title {
+    margin-bottom: 10px;
+}
+
+.candidate-card__vacancy-description {
+    margin-bottom: 10px;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
