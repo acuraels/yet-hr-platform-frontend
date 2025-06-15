@@ -1,0 +1,17 @@
+FROM node:22-alpine
+
+WORKDIR /app
+
+# качаем только манифесты из frontend-папки
+COPY yet-hr-platform-frontend/package.json    ./
+COPY yet-hr-platform-frontend/package-lock.json ./
+
+RUN npm install --legacy-peer-deps
+
+# копируем весь код фронта
+COPY yet-hr-platform-frontend/ ./
+
+ENV VITE_API_URL=http://backend:8000/api/v1
+
+# хостим на 0.0.0.0, чтобы видеть снаружи
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
